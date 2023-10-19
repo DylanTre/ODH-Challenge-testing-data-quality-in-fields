@@ -1,0 +1,5 @@
+Date: 2023/10/19
+Participants: Justinas Maniusis, Dylan Trenti
+Activity: Repository setup
+results:
+dificulties:
