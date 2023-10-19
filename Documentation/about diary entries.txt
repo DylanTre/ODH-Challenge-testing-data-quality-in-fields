@@ -1,0 +1,15 @@
+Before everything: in the folder Diaries, create a folder for your group. You will upload the files for your diary entries there.
+
+How to create a diary entry for the challenge
+
+1- When you work on something on the challenge, create a diary entry
+
+2- Each diary entry is a separate file (it can be a simple txt file) - its name should be in the format "MMDD - title" (, )where DD is day with 2 digits and MM month with 2 digits) - an example "2710 - Exploring Open Data Hub APIs"
+
+3- The entry should have the following information: the date when the work happen, who partecipated, what was done, results, and dificulties found
+
+4- The report can be simple and short
+
+5- You can add additional files to your report (to show results and share information)
+
+6 - The date of the entries upload will be considered for the final grade to consider the regularity of the work on the challenge, so try to upload it as soon as possible 
