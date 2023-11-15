@@ -1,12 +1,13 @@
 package it.unibz;
 
-import java.io.FileNotFoundException;
-
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException {
-        var validator = new Validator();
+    public static void main(String[] args) {
 
-        validator.loadRules();
+        /*
+         *
+         */
+
+        var dataParser = new DataParser("validation-data.json");
 
 
     }
