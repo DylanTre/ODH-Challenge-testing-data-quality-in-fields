@@ -2,11 +2,7 @@ package it.unibz;
 
 import java.util.Map;
 
-public class BooleanValidator extends Validator<Boolean>{
-    public BooleanValidator(DataParser dataParser, NumberValidator numberValidator) {
-        super(dataParser, numberValidator);
-    }
-
+public class BooleanValidator extends AbstractValidator<Boolean> {
     @Override
     public boolean validate(Boolean inputValue, Map<String, Object> rules) {
         /*

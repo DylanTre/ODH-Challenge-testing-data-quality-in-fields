@@ -11,7 +11,7 @@ public class DataParser {
 
     private final String validationDataFilename;
 
-    public Map<String, Object> parseValidationData() {
+    public Map<String, Object> parseInputData() {
         var jsonFile = new File(validationDataFilename);
         var objectMapper = new ObjectMapper();
 
