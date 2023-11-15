@@ -1,0 +1,3 @@
+number:
+  positive: true
+  more_than: 10
