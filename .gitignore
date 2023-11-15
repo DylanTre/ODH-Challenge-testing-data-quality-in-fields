@@ -3,12 +3,13 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### IntelliJ IDEA ###
-.idea/
-
 # Default ignored files
 /shelf/
 /workspace.xml
+
+### IntelliJ IDEA ###
+.idea/
+
 *.iws
 *.iml
 *.ipr
