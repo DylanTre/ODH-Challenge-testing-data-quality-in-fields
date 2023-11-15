@@ -1,0 +1,14 @@
+-----------------------------------------------
+Date: 14-11-2023
+Participants: Justinas Maniusis & Dylan Trenti
+-----------------------------------------------
+
+What we did:
+Spoke about what we researched so far and how should we start. Aggreed on some coding practices and workflows.
+Decided to start with a very basic validator and a basic validation rule for each member
+
+Results:
+Work divided for this week
+
+Difficulties:
+None
