@@ -1,7 +1,6 @@
 package it.unibz;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.util.Map;
@@ -10,8 +9,7 @@ public class DataParser {
 
     private final String validationDataFilename;
 
-    public  DataParser(final String validationDataFilename)
-    {
+    public  DataParser(final String validationDataFilename) {
         this.validationDataFilename = validationDataFilename;
     }
 

@@ -1,8 +1,6 @@
 package it.unibz;
 
 import it.unibz.configuration.ConfigParser;
-import it.unibz.validators.NumberValidator;
-
 import java.io.FileNotFoundException;
 
 public class Main {
