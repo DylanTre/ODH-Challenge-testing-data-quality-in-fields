@@ -1,5 +1,8 @@
 package it.unibz;
 
+import it.unibz.configuration.ConfigParser;
+import it.unibz.validators.NumberValidator;
+
 import java.io.FileNotFoundException;
 
 public class Main {
@@ -11,15 +14,16 @@ public class Main {
          * 3. Validate for each
          */
 
-        var dataParser = new DataParser("validation-data.json");
-        var dataValidator = new DataValidator(new NumberValidator());
+        DataParser dataParser = new DataParser("validation-data.json");
+        ConfigParser config = new ConfigParser();
 
         try {
-            dataValidator.loadRules();
-            dataValidator.validateAll(dataParser.parseInputData());
+            config.loadRules();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        DataValidator dataValidator = new DataValidator(config.getGenericValidators());
+        dataValidator.validateAll(dataParser.parseInputData());
 
     }
 }

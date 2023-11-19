@@ -6,10 +6,14 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 import java.util.Map;
 
-@RequiredArgsConstructor
 public class DataParser {
 
     private final String validationDataFilename;
+
+    public  DataParser(final String validationDataFilename)
+    {
+        this.validationDataFilename = validationDataFilename;
+    }
 
     public Map<String, Object> parseInputData() {
         var jsonFile = new File(validationDataFilename);

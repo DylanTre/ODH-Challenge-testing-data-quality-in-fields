@@ -1,3 +1,9 @@
-number:
-  positive: true
-  more_than: 10
+generic_rules:
+  - number:
+      key_match: num.*
+      positive: true
+      more_than: 10
+
+  - string:
+      key_match: .*
+      value_match: .*t
