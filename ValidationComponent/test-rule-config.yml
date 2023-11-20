@@ -1,13 +1,4 @@
 generic_rules:
-  - number:
-      key_match: num.*
-      positive: true
-      more_than: 10
-
-  - string:
-      key_match: .*
-      value_match: .*t
-
   - date:
       key_match: date.*
       format: dd/MM/yyyy HH:mm:ss

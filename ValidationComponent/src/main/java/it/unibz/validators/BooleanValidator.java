@@ -2,7 +2,7 @@ package it.unibz.validators;
 
 import java.util.Map;
 
-public class BooleanValidator extends AbstractValidator{
+public class BooleanValidator extends AbstractValidator {
 
     public BooleanValidator(final Map<String, Object> rules)
     {

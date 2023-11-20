@@ -2,6 +2,7 @@ package it.unibz.configuration;
 
 import it.unibz.validators.AbstractValidator;
 import it.unibz.validators.BooleanValidator;
+import it.unibz.validators.DateValidator;
 import it.unibz.validators.NumberValidator;
 import it.unibz.validators.StringValidator;
 import lombok.Getter;
@@ -16,16 +17,16 @@ import java.util.Map;
 
 public class ConfigParser {
     public static final String RULE_CONFIG_YML = "rule-config.yml";
-
+    public static final String TEST_RULE_CONFIG_YML = "test-rule-config.yml";
     private static final String GENERIC_VALIDATORS_KEY = "generic_rules";
 
     @Getter
     @Setter
     private Map<String, Map<String, Object>> validationRules;
 
-    public void loadRules() throws FileNotFoundException {
+    public void loadRules(String filename) throws FileNotFoundException {
         var yaml = new Yaml();
-        var inputStream = new FileInputStream(RULE_CONFIG_YML);
+        var inputStream = new FileInputStream(filename);
 
         this.validationRules = yaml.load(inputStream);
     }
@@ -45,10 +46,12 @@ public class ConfigParser {
             for (Map.Entry<String,Object> entry: ob.entrySet()){
                 if("number".equals(entry.getKey())){
                     validators.add(new NumberValidator((Map<String, Object>) entry.getValue()));
-                }else if("string".equals(entry.getKey())){
+                } else if("string".equals(entry.getKey())){
                     validators.add(new StringValidator((Map<String, Object>) entry.getValue()));
-                }else if("boolean".equals(entry.getKey())){
+                } else if("boolean".equals(entry.getKey())){
                     validators.add(new BooleanValidator((Map<String, Object>) entry.getValue()));
+                } else if("date".equals(entry.getKey())){
+                    validators.add(new DateValidator((Map<String, Object>) entry.getValue()));
                 }
             }
         }

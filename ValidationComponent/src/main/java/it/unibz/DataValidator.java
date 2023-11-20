@@ -26,7 +26,7 @@ public class DataValidator {
     public void validateAll(Map<String, Object> dataToValidate) {
         for (Map.Entry<String, Object> entry : dataToValidate.entrySet()) {
              for (AbstractValidator validator : validators) {
-                 if(validator.validate(entry.getKey(), entry.getValue()))
+                 if (validator.validate(entry.getKey(), entry.getValue()))
                      System.out.println("found valid data for: " + entry.getKey() + ":" + entry.getValue().toString());
              }
         }

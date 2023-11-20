@@ -2,7 +2,7 @@ package it.unibz.validators;
 
 import java.util.Map;
 
-public class NumberValidator extends AbstractValidator{
+public class NumberValidator extends AbstractValidator {
 
     public NumberValidator(final Map<String, Object> rules){
         super(rules);
@@ -10,7 +10,7 @@ public class NumberValidator extends AbstractValidator{
 
     @Override
     public boolean validate(final String key, Object inputValue) {
-        if(keyMatch(key)){
+        if (keyMatch(key)) {
             if (inputValue instanceof Integer intInputValue) {
                 boolean valid = true;
                 for (Map.Entry<String, Object> entry : this.rules.entrySet()) {
