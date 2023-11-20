@@ -38,7 +38,10 @@ public class DateValidator extends AbstractValidator {
                      *  Always parse the date first when checking format
                      *  only then can continue to check other date-related rules
                      */
-                    if ("format".equals(ruleDescriptorKey)) {
+                    if ("key_match".equals(ruleDescriptorKey)) {
+                        // Ignore key match rule
+                        continue;
+                    } else if ("format".equals(ruleDescriptorKey)) {
                         if (!isFormatValid(dateInputValue, DateTimeFormatter.ofPattern(ruleDescriptorValue, Locale.ROOT))) {
                             break;
                         }
