@@ -1,2 +1,0 @@
-1. Do we need logging?
-2. How to specify that don't validate date as string? Maybe with some keywords
