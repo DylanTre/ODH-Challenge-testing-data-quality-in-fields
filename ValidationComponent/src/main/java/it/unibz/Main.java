@@ -1,6 +1,7 @@
 package it.unibz;
 
 import it.unibz.configuration.ConfigParser;
+
 import java.io.FileNotFoundException;
 
 public class Main {
@@ -16,7 +17,7 @@ public class Main {
         ConfigParser config = new ConfigParser();
 
         try {
-            config.loadRules();
+            config.loadRules(ConfigParser.RULE_CONFIG_YML);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

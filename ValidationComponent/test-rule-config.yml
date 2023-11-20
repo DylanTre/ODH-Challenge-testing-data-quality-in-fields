@@ -1,11 +1,7 @@
 number:
-  key_match: num.*
-  more_than: 10
+  key_match: magical_number
+  more_than: -10
   even: true
-
-string:
-  key_match: .*
-  value_match: .*t
 
 date:
   key_match: date.*

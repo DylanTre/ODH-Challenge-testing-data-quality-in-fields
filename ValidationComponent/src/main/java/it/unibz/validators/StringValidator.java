@@ -1,6 +1,7 @@
 package it.unibz.validators;
 
 import it.unibz.utils.RegexUtils;
+
 import java.util.Map;
 
 public class StringValidator extends AbstractValidator{
