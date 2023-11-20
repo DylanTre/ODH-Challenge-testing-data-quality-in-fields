@@ -40,7 +40,7 @@ public class ConfigParser {
 
         List<Map<String, Object>> genericRules = (List<Map<String, Object>>) validationRules.get(GENERIC_VALIDATORS_KEY);
         System.out.println();
-        for (Map<String, Object> ob :genericRules) {
+        for (Map<String, Object> ob : genericRules) {
             //FIXME By contruction ob is size=1 this can be improved, to decide if changing the config structure or the code
             //still, this work but the code is ugly tho
             for (Map.Entry<String,Object> entry: ob.entrySet()){

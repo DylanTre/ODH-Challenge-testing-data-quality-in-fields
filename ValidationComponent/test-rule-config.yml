@@ -1,4 +1,9 @@
 generic_rules:
+  - number:
+      key_match: magical_number
+      more_than: -10
+      even: true
+
   - date:
       key_match: date.*
       format: dd/MM/yyyy HH:mm:ss

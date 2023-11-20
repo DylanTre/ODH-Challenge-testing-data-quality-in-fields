@@ -1,8 +1,8 @@
 generic_rules:
   - number:
       key_match: num.*
-      positive: true
       more_than: 10
+      even: true
 
   - string:
       key_match: .*
