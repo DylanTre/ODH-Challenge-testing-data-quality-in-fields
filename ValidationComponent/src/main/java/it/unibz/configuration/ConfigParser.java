@@ -18,7 +18,7 @@ import java.util.Map;
 public class ConfigParser {
     public static final String RULE_CONFIG_YML = "rule-config.yml";
     public static final String TEST_RULE_CONFIG_YML = "test-rule-config.yml";
-    private static final String GENERIC_VALIDATORS_KEY = "generic_rules";
+    public static final String GENERIC_VALIDATORS_KEY = "generic_rules";
 
     @Getter
     @Setter
@@ -36,23 +36,19 @@ public class ConfigParser {
     }
 
     public List<AbstractValidator> getGenericValidators(){
-        List<AbstractValidator> validators = new ArrayList<AbstractValidator>();
+        List<AbstractValidator> validators = new ArrayList<>();
 
-        List<Map<String, Object>> genericRules = (List<Map<String, Object>>) validationRules.get(GENERIC_VALIDATORS_KEY);
-        System.out.println();
-        for (Map<String, Object> ob : genericRules) {
-            //FIXME By contruction ob is size=1 this can be improved, to decide if changing the config structure or the code
-            //still, this work but the code is ugly tho
-            for (Map.Entry<String,Object> entry: ob.entrySet()){
-                if("number".equals(entry.getKey())){
-                    validators.add(new NumberValidator((Map<String, Object>) entry.getValue()));
-                } else if("string".equals(entry.getKey())){
-                    validators.add(new StringValidator((Map<String, Object>) entry.getValue()));
-                } else if("boolean".equals(entry.getKey())){
-                    validators.add(new BooleanValidator((Map<String, Object>) entry.getValue()));
-                } else if("date".equals(entry.getKey())){
-                    validators.add(new DateValidator((Map<String, Object>) entry.getValue()));
-                }
+        //FIXME By contruction ob is size=1 this can be improved, to decide if changing the config structure or the code
+        //still, this work but the code is ugly tho
+        for (Map.Entry<String, Map<String, Object>> entry : validationRules.entrySet()){
+            if("number".equals(entry.getKey())){
+                validators.add(new NumberValidator(entry.getValue()));
+            } else if("string".equals(entry.getKey())){
+                validators.add(new StringValidator(entry.getValue()));
+            } else if("boolean".equals(entry.getKey())){
+                validators.add(new BooleanValidator(entry.getValue()));
+            } else if("date".equals(entry.getKey())){
+                validators.add(new DateValidator(entry.getValue()));
             }
         }
         return validators;

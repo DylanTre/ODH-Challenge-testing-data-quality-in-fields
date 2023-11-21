@@ -41,12 +41,14 @@ public class DateValidator extends AbstractValidator {
                     if ("key_match".equals(ruleDescriptorKey)) {
                         // Ignore key match rule
                         continue;
-                    } else if ("format".equals(ruleDescriptorKey)) {
+                    }
+
+                    if ("format".equals(ruleDescriptorKey)) {
                         if (!isFormatValid(dateInputValue, DateTimeFormatter.ofPattern(ruleDescriptorValue, Locale.ROOT))) {
                             break;
                         }
                     } else if ("day_of_week".equals(ruleDescriptorKey)) {
-                        if (!isDateOfWeekValid(parsedDate, DayOfWeek.valueOf(ruleDescriptorValue))) {
+                        if (!isDateOfWeekValid(parsedDate, DayOfWeek.valueOf(ruleDescriptorValue.toUpperCase(Locale.ROOT)))) {
                             break;
                         }
                     } else if ("is_before".equals(ruleDescriptorKey)) {

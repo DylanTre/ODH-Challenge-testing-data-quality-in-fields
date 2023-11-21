@@ -16,15 +16,27 @@ import static org.junit.Assert.assertTrue;
 
 public class DateValidatorTest {
 
+    public static final String DATE_KEY = "date";
+    public static final String FIXED_INSTANT = "2023-11-20T12:00:00Z";
+    public static final String DATE_ENTRY_KEY = "datetino";
+
     private Clock clock;
     private DateValidator dateValidator;
 
     @Before
     public void setUp() throws FileNotFoundException {
-        clock = Clock.fixed(Instant.parse("2023-11-20T12:00:00Z"), ZoneId.of("UTC"));
+        clock = Clock.fixed(Instant.parse(FIXED_INSTANT), ZoneId.of("UTC"));
         ConfigParser config = new ConfigParser();
         config.loadRules(ConfigParser.TEST_RULE_CONFIG_YML);
-        dateValidator = new DateValidator(config.getRulesForSingleInputDataByKey("date"));
+        dateValidator = new DateValidator(config.getRulesForSingleInputDataByKey(DATE_KEY));
+    }
+
+    @Test
+    public void whenTestNumberThatMatchesKeyThenValidIfCorrespondingRulesSatisfied() {
+        assertTrue(dateValidator.keyMatch(DATE_ENTRY_KEY));
+
+        // Assert whether the rule structure is as expected?? Dunno
+        assertTrue(dateValidator.validate(DATE_ENTRY_KEY, "20/11/2023 12:00:00"));
     }
 
     @Test
