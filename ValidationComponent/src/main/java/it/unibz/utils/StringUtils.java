@@ -11,7 +11,7 @@ public class StringUtils {
     public static boolean isNumber(String string){
         if (null == string) { return false; }
         try {
-            double d = Double.parseDouble(string);
+            final double d = Double.parseDouble(string);
         } catch (NumberFormatException nfe) {
             return false;
         }
@@ -33,5 +33,10 @@ public class StringUtils {
     {
         if (!isBoolean(string)) return null; //FIXME should be agreed if we want exceptions or defensive approach
         return (TRUE_KW.equalsIgnoreCase(string));
+    }
+
+    public static Number getNumberFromString(String string) {
+        if (!isNumberPattern(string)) return null; //FIXME should be agreed if we want exceptions or defensive approach
+        return Double.parseDouble(string);
     }
 }

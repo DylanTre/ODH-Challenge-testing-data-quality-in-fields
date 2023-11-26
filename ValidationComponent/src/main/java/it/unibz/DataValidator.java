@@ -1,22 +1,14 @@
 package it.unibz;
 
+import it.unibz.utils.StringUtils;
 import it.unibz.validators.AbstractValidator;
 
 import java.util.List;
 import java.util.Map;
 
 public class DataValidator {
-
-   //Can be a singletone, if we decide so put the constructor to private and add a method for passing
-   //validators dinamically instead of inside the constructor
-   //private static DataValidator instance = null;
-   //public static DataValidator getInstance(){
-   //   if(null == instance)
-   //       instance = new DataValidator();
-   //  return instance;
-   //}
-
     private final List<AbstractValidator> validators;
+    private final boolean enableStrToPrimitive = false;
 
     public DataValidator(List<AbstractValidator> validators){
         this.validators = validators;
@@ -26,8 +18,19 @@ public class DataValidator {
     //assumes that the input Map contains leaves
     public void validateAll(Map<String, Object> dataToValidate) {
         for (Map.Entry<String, Object> entry : dataToValidate.entrySet()) {
-             for (AbstractValidator validator : validators) {
-                 if (validator.validate(entry.getKey(), entry.getValue())) {
+            Object value = entry.getValue();
+            if(enableStrToPrimitive && (value instanceof String))
+            {
+                if(StringUtils.isBoolean((String) value)){
+                    value = StringUtils.getBooleanFromString((String) value);
+                }
+                if(StringUtils.isNumber((String) value)){
+                    value = StringUtils.getNumberFromString((String) value);
+                }
+            }
+
+            for (AbstractValidator validator : validators) {
+                 if (validator.validate(entry.getKey(), value)) {
                      System.out.println("found valid data for: " + entry.getKey() + ":" + entry.getValue().toString());
                  }
              }
