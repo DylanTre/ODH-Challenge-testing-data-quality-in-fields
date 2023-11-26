@@ -17,7 +17,6 @@ import java.util.Map;
 
 public class ConfigParser {
     public static final String RULE_CONFIG_YML = "rule-config.yml";
-    public static final String TEST_RULE_CONFIG_YML = "test-rule-config.yml";
     public static final String GENERIC_VALIDATORS_KEY = "generic_rules";
 
     @Getter

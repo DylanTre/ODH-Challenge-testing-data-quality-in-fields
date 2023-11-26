@@ -14,10 +14,16 @@ public class BooleanValidator extends AbstractValidator {
         /*
          * Boolean variable should not have more than 1 rule, otherwise it is a list of boolean variables
          */
+        boolean out = true;
         if(keyMatch(key)){
             if(inputValue instanceof Boolean){
-                //TODO implement logic here
+                for (Map.Entry<String, Object> entry : this.rules.entrySet()) {
+                    if("expected".equals(entry.getKey())){
+                       out = ((Boolean) entry.getValue() == inputValue);
+                    }
+                }
             }
+            return out;
         }
         return false;
     }

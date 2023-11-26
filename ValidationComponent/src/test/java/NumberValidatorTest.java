@@ -11,13 +11,14 @@ public class NumberValidatorTest {
 
     public static final String NUMBER_KEY = "number";
     public static final String MAGICAL_NUMBER_KEY = "magical_number";
+    public static final String TEST_RULE_CONFIG_YML = "test-rule-config.yml";
 
     private NumberValidator numberValidator;
 
     @Before
     public void setUp() throws FileNotFoundException {
         ConfigParser config = new ConfigParser();
-        config.loadRules(ConfigParser.TEST_RULE_CONFIG_YML);
+        config.loadRules(TEST_RULE_CONFIG_YML);
         numberValidator = new NumberValidator(config.getRulesForSingleInputDataByKey(NUMBER_KEY));
     }
 
