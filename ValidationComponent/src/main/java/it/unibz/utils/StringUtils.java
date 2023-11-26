@@ -1,7 +1,5 @@
 package it.unibz.utils;
 
-import java.util.Stack;
-
 public class StringUtils {
 
     public static String TRUE_KW = "true";
