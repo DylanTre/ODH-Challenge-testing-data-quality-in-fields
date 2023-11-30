@@ -13,3 +13,7 @@ date:
   day_of_week: monday
   is_before: 27/11/2023
   is_after: 11/11/2023
+
+boolean:
+  key_match: bool
+  expected: true
