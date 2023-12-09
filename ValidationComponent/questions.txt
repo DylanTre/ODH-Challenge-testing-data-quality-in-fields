@@ -4,3 +4,4 @@
 4. No bytes and short in JSON & short is covered by Integer/Long?
 5. What to do with null values?
 6. Think about generic and specific rules. How do we differentiate?
+    - Asterix to match generic cases

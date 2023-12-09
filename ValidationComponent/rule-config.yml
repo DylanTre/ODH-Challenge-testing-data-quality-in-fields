@@ -17,3 +17,6 @@ date:
 boolean:
   key_match: bool
   expected: true
+
+list:
+  key_match: list

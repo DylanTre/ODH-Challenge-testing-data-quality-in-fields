@@ -1,25 +1,25 @@
 package it.unibz.validators;
 
+
 import java.util.Map;
 
-public class BooleanValidator extends AbstractValidator {
+//JsonLikeValue = JLString String | JLInt Int | JLArray [JsonLikeValue] deriving (Show, Eq)
 
-    public BooleanValidator(final Map<String, Object> rules)
-    {
+public class ListValidator extends AbstractValidator {
+
+
+    protected ListValidator(Map<String, Object> rules) {
         super(rules);
     }
 
     @Override
-    public boolean validate(final String key, Object inputValue) {
-        /*
-         * Boolean variable should not have more than 1 rule, otherwise it is a list of boolean variables
-         */
+    public boolean validate(String key, Object inputValue) {
         boolean out = true;
         if (keyMatch(key)){
             if (inputValue instanceof Boolean){
                 for (Map.Entry<String, Object> entry : this.rules.entrySet()) {
                     if ("expected".equals(entry.getKey())){
-                       out = (entry.getValue() == inputValue);
+                        out = (entry.getValue() == inputValue);
                     }
                 }
             }
