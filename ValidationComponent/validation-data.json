@@ -4,5 +4,6 @@
   "string": "test",
   "numb": 3034,
   "date": "2022-11-19 12:00:00",
-  "bool": true
+  "bool": true,
+  "dd": [1,2,"3"]
 }
