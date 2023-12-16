@@ -1,5 +1,6 @@
 package it.unibz;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.utils.StringUtils;
 import it.unibz.validators.AbstractValidator;
 
@@ -16,24 +17,28 @@ public class DataValidator {
 
 
     //assumes that the input Map contains leaves
-    public void validateAll(Map<String, Object> dataToValidate) {
-        for (Map.Entry<String, Object> entry : dataToValidate.entrySet()) {
-            Object value = entry.getValue();
-            if(enableStrToPrimitive && (value instanceof String))
-            {
-                if(StringUtils.isBoolean((String) value)){
-                    value = StringUtils.getBooleanFromString((String) value);
-                }
-                if(StringUtils.isNumber((String) value)){
-                    value = StringUtils.getNumberFromString((String) value);
-                }
-            }
+//    public void validateAll(Map<String, Object> dataToValidate) {
+//        for (Map.Entry<String, Object> entry : dataToValidate.entrySet()) {
+//            Object value = entry.getValue();
+//            if(enableStrToPrimitive && (value instanceof String))
+//            {
+//                if(StringUtils.isBoolean((String) value)){
+//                    value = StringUtils.getBooleanFromString((String) value);
+//                }
+//                if(StringUtils.isNumber((String) value)){
+//                    value = StringUtils.getNumberFromString((String) value);
+//                }
+//            }
+//
+//            for (AbstractValidator validator : validators) {
+//                 if (validator.validate(entry.getKey(), value)) {
+//                     System.out.println("found valid data for: " + entry.getKey() + ":" + entry.getValue().toString());
+//                 }
+//             }
+//        }
+//    }
 
-            for (AbstractValidator validator : validators) {
-                 if (validator.validate(entry.getKey(), value)) {
-                     System.out.println("found valid data for: " + entry.getKey() + ":" + entry.getValue().toString());
-                 }
-             }
-        }
-    }
+     public void validateAll(JsonNode dataToValidate) {
+
+     }
 }

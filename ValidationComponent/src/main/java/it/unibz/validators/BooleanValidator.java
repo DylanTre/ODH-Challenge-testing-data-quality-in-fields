@@ -17,7 +17,7 @@ public class BooleanValidator extends AbstractValidator {
         boolean out = true;
         if (keyMatch(key)){
             if (inputValue instanceof Boolean){
-                for (Map.Entry<String, Object> entry : this.rules.entrySet()) {
+                for (Map.Entry<String, Object> entry : this.constraints.entrySet()) {
                     if ("expected".equals(entry.getKey())){
                        out = (entry.getValue() == inputValue);
                     }

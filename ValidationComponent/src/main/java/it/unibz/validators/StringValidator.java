@@ -20,9 +20,9 @@ public class StringValidator extends AbstractValidator{
             if(inputValue instanceof String){
                 {
                     boolean valid = true;
-                    for (Map.Entry<String, Object> entry : this.rules.entrySet()) {
+                    for (Map.Entry<String, Object> entry : this.constraints.entrySet()) {
                         if("value_match".equals(entry.getKey())){ //FIXME String "value_match" should be a variable
-                            valid = RegexUtils.regexMatch((String) rules.get("value_match"), key);
+                            valid = RegexUtils.regexMatch((String) constraints.get("value_match"), key);
                         }
                     }
                     return valid;

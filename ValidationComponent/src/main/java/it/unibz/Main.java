@@ -1,6 +1,7 @@
 package it.unibz;
 
 import it.unibz.configuration.ConfigParser;
+import it.unibz.validators.ObjectValidator;
 
 import java.io.FileNotFoundException;
 
@@ -9,7 +10,7 @@ public class Main {
 
         /*
          * 1. Parse input
-         * 2. Get rules from config
+         * 2. Get constraints from config
          * 3. Validate for each
          */
 
@@ -21,8 +22,11 @@ public class Main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        DataValidator dataValidator = new DataValidator(config.getGenericValidators());
-        dataValidator.validateAll(dataParser.parseInputData());
+
+        ObjectValidator validator = new ObjectValidator(config.getValidationRules());
+
+
+        validator.validateJsonNode(dataParser.parseData());
 
     }
 }

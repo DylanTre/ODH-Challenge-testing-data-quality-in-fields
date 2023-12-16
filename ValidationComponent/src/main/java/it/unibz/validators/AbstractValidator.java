@@ -11,9 +11,9 @@ public abstract class AbstractValidator {
     protected final String KEY_FILTER_VALUE = "key_match";
 
     @Getter
-    protected final Map<String, Object> rules;
-    protected AbstractValidator(final Map<String, Object> rules){
-        this.rules = rules;
+    protected final Map<String, Object> constraints;
+    protected AbstractValidator(final Map<String, Object> constraints){
+        this.constraints = constraints;
     }
 
     /*
@@ -22,6 +22,6 @@ public abstract class AbstractValidator {
     public abstract boolean validate(String key, Object inputValue);
 
     public boolean keyMatch(final String key) {
-        return RegexUtils.regexMatch((String) rules.get(KEY_FILTER_VALUE), key);
+        return RegexUtils.regexMatch((String) constraints.get(KEY_FILTER_VALUE), key);
     }
 }

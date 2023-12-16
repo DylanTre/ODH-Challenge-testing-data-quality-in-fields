@@ -27,7 +27,7 @@ public class DateValidator extends AbstractValidator {
 
         if (keyMatch(key)) {
             if (inputValue instanceof String dateInputValue) {
-                for (Map.Entry<String, Object> entry : this.rules.entrySet()) {
+                for (Map.Entry<String, Object> entry : this.constraints.entrySet()) {
                     ruleDescriptorKey = entry.getKey();
                     ruleDescriptorValue = (String) entry.getValue();
                     /*
@@ -36,7 +36,7 @@ public class DateValidator extends AbstractValidator {
                      *  validation Scenarios
                      *  ------------------------------------------------
                      *  Always parse the date first when checking format
-                     *  only then can continue to check other date-related rules
+                     *  only then can continue to check other date-related constraints
                      */
                     if ("key_match".equals(ruleDescriptorKey)) {
                         // Ignore key match rule

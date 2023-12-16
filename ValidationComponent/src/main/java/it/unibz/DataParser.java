@@ -1,9 +1,9 @@
 package it.unibz;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.util.Map;
 
 public class DataParser {
 
@@ -13,7 +13,7 @@ public class DataParser {
         this.validationDataFilename = validationDataFilename;
     }
 
-    public Map<String, Object> parseInputData() {
+    public JsonNode parseData() {
         var jsonFile = new File(validationDataFilename);
         var objectMapper = new ObjectMapper();
 
@@ -21,7 +21,7 @@ public class DataParser {
          * The structure of the JSON is not fixed, and the keys can vary.
          */
         try {
-            return objectMapper.readValue(jsonFile, Map.class);
+            return objectMapper.readTree(jsonFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
