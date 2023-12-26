@@ -1,10 +1,6 @@
 package it.unibz.configuration;
 
-import it.unibz.validators.AbstractValidator;
-import it.unibz.validators.BooleanValidator;
-import it.unibz.validators.DateValidator;
-import it.unibz.validators.NumberValidator;
-import it.unibz.validators.StringValidator;
+import it.unibz.validators.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -35,21 +31,41 @@ public class ConfigParser {
     }
 
     public List<AbstractValidator> getGenericValidators(){
-        List<AbstractValidator> validators = new ArrayList<>();
+        return getValidatorsFromMap(validationRules);
+    }
 
+    public List<AbstractValidator> getValidatorsFromMap(Map<String, Map<String, Object>> map){
+        List<AbstractValidator> validators = new ArrayList<>();
         //FIXME By contruction ob is size=1 this can be improved, to decide if changing the config structure or the code
-        //still, this work but the code is ugly tho
-        for (Map.Entry<String, Map<String, Object>> entry : validationRules.entrySet()){
-            if("number".equals(entry.getKey())){
-                validators.add(new NumberValidator(entry.getValue()));
-            } else if("string".equals(entry.getKey())){
-                validators.add(new StringValidator(entry.getValue()));
-            } else if("boolean".equals(entry.getKey())){
-                validators.add(new BooleanValidator(entry.getValue()));
-            } else if("date".equals(entry.getKey())){
-                validators.add(new DateValidator(entry.getValue()));
+        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()){
+            validators.add(buildValidator(entry.getKey(), entry.getValue()));
+        }
+        return validators;
+    }
+
+    public List<AbstractValidator> getValidatorsFromList(List<Map<String, Object>> list){
+        List<AbstractValidator> validators = new ArrayList<>();
+        for (Map<String, Object> l : list){
+            for (Map.Entry<String, Object> entry : l.entrySet()){
+                validators.add(buildValidator(entry.getKey(), (Map<String, Object>) entry.getValue()));
             }
         }
         return validators;
     }
+
+    public  AbstractValidator buildValidator(String key, Map<String, Object> content){
+        if("number".equals(key)){
+            return new NumberValidator(content);
+        } else if("string".equals(key)){
+            return new StringValidator(content);
+        } else if("boolean".equals(key)){
+            return new BooleanValidator(content);
+        } else if("date".equals(key)){
+            return new DateValidator(content);
+        } else if ("object".equals(key)){
+            return new ObjectValidator(content);
+        }
+        throw new IllegalArgumentException("Validator unavailable with name: " + key);
+    }
+
 }

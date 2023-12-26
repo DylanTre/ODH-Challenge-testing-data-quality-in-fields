@@ -18,5 +18,20 @@ boolean:
   key_match: bool
   expected: true
 
-list:
-  key_match: list
+object:
+  key_match: nestedObject
+  validators:
+    - string:
+        key_match: .*
+        value_match: .*t
+    - object:
+        key_match: object
+        validators:
+          - string:
+              key_match: .*
+              value_match: .*t
+          - number:
+              key_match: num.*
+              more_than: 10
+              even: true
+

@@ -17,15 +17,15 @@ public class NumberValidator extends AbstractValidator {
                 return false;
             }
 
-            if (inputValue instanceof Integer integerInputValue) {
-                return validate(integerInputValue, false);
-            } else if (inputValue instanceof Long longInputValue) {
-                return validate(longInputValue, false);
-            } else if (inputValue instanceof Double doubleInputValue) {
-                if (isNaNOrInfinite(doubleInputValue)) {
+            if (inputValue instanceof Integer) {
+                return validate((Integer)inputValue, false);
+            } else if (inputValue instanceof Long) {
+                return validate((Long)inputValue, false);
+            } else if (inputValue instanceof Double) {
+                if (isNaNOrInfinite((Double)inputValue)) {
                     return false;
                 }
-                return validate(doubleInputValue, true);
+                return validate((Double)inputValue, true);
             }
             return false;
         }
