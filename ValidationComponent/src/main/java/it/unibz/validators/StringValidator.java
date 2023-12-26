@@ -22,7 +22,7 @@ public class StringValidator extends AbstractValidator{
                     boolean valid = true;
                     for (Map.Entry<String, Object> entry : this.rules.entrySet()) {
                         if("value_match".equals(entry.getKey())){ //FIXME String "value_match" should be a variable
-                            valid = RegexUtils.regexMatch((String) rules.get("value_match"), key);
+                            valid = RegexUtils.regexMatch(rules.get("value_match").toString(), (String) inputValue);
                         }
                     }
                     return valid;

@@ -22,6 +22,9 @@ public abstract class AbstractValidator {
     public abstract boolean validate(String key, Object inputValue);
 
     public boolean keyMatch(final String key) {
+        if (null == key || "".equals(key)) {
+            return true; //allowing optional keys
+        }
         return RegexUtils.regexMatch((String) rules.get(KEY_FILTER_VALUE), key);
     }
 }

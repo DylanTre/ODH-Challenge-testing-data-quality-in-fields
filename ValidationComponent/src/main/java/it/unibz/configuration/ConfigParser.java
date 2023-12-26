@@ -64,8 +64,10 @@ public class ConfigParser {
             return new DateValidator(content);
         } else if ("object".equals(key)){
             return new ObjectValidator(content);
+        } else if ("list".equals(key)){
+            return new ListValidator(content);
         }
-        throw new IllegalArgumentException("Validator unavailable with name: " + key);
+        return null;
     }
 
 }
