@@ -1,11 +1,9 @@
 package it.unibz;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import it.unibz.utils.StringUtils;
 import it.unibz.validators.AbstractValidator;
 
 import java.util.List;
-import java.util.Map;
 
 public class DataValidator {
     private final List<AbstractValidator> validators;

@@ -1,6 +1,5 @@
 import it.unibz.configuration.ConfigParser;
 import it.unibz.validators.BooleanValidator;
-import it.unibz.validators.DateValidator;
 import org.junit.Before;
 import org.junit.Test;
 

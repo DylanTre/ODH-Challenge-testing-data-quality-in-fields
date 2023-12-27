@@ -3,9 +3,7 @@ package it.unibz.validators;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibz.ValidatorConstraint;
 import it.unibz.model.ValidationRule;
-import it.unibz.utils.RegexUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -20,9 +18,10 @@ public class ObjectValidator {
 
     @Getter
     private final Map<String, List<ValidationRule>> rules;
-//
-//    private final NumberValidator numberValidator;
-//    private final StringValidator stringValidator;
+
+    private final NumberValidator numberValidator;
+    private final StringValidator stringValidator;
+    private final BooleanValidator booleanValidator;
 
 
     public void validateJsonNode(JsonNode jsonNode) {
@@ -73,16 +72,12 @@ public class ObjectValidator {
             return;
         }
 
-
-
         if (keyMatch(nodeName)) {
             switch (nodeType) {
-//                case NUMBER -> numberValidator.validate(nodeName, nodeValue);
-//                case BOOLEAN -> validateWithConstraints(null, nodeValue.textValue(), rules, null);
-//                case STRING -> validateWithConstraints(null, nodeValue.textValue(), rules, null);
-                default -> {
-                    return;
-                }
+                case NUMBER -> numberValidator.validate(nodeName, nodeValue);
+                case BOOLEAN -> booleanValidator.validate(nodeName, nodeValue);
+                case STRING -> stringValidator.validate(nodeName, nodeValue);
+                default -> {}
             }
         }
 
