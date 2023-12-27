@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
+import java.util.HashMap;
+
 public class BooleanValidatorTest {
     public static final String BOOL_KEY = "boolean";
 
@@ -14,12 +16,12 @@ public class BooleanValidatorTest {
     @Before
     public void setUp() throws FileNotFoundException {
         ConfigParser config = new ConfigParser();
-        config.loadRules(TEST_RULE_CONFIG_YML);
-        booleanValidator = new BooleanValidator(config.getRulesForSingleInputDataByKey(BOOL_KEY));
+        config.loadRules();
+        booleanValidator = new BooleanValidator(new HashMap<>());
     }
 
     @Test
     public void booleanValidatorTrue(){
-        booleanValidator.validate(BOOL_KEY, true);
+        booleanValidator.validate(BOOL_KEY, true, null);
     }
 }

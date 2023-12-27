@@ -3,13 +3,10 @@ package it.unibz.validators;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibz.model.ValidationRule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 public class ObjectValidator {
@@ -17,15 +14,14 @@ public class ObjectValidator {
     private static final String KEY_FILTER_VALUE = "key_match";
 
     @Getter
-    private final Map<String, List<ValidationRule>> rules;
+    private final JsonNode rules;
 
-    private final NumberValidator numberValidator;
-    private final StringValidator stringValidator;
-    private final BooleanValidator booleanValidator;
-
+//    private final NumberValidator numberValidator;
+//    private final StringValidator stringValidator;
+//    private final BooleanValidator booleanValidator;
 
     public void validateJsonNode(JsonNode jsonNode) {
-        if (jsonNode.isEmpty()) {
+        if (jsonNode == null || jsonNode.isEmpty()) {
             return;
         } else if (jsonNode.isObject()) {
             ObjectNode objectNode = (ObjectNode) jsonNode;
@@ -67,16 +63,16 @@ public class ObjectValidator {
 //    }
 
     private void validateField(JsonNodeType nodeType, String nodeName,
-                               JsonNode nodeValue, Map<String, List<ValidationRule>> constraintValues) {
+                               JsonNode nodeValue, JsonNode constraintValues) {
         if (nodeType == JsonNodeType.OBJECT) {
             return;
         }
 
         if (keyMatch(nodeName)) {
             switch (nodeType) {
-                case NUMBER -> numberValidator.validate(nodeName, nodeValue);
-                case BOOLEAN -> booleanValidator.validate(nodeName, nodeValue);
-                case STRING -> stringValidator.validate(nodeName, nodeValue);
+//                case NUMBER -> numberValidator.validate(nodeName, nodeValue);
+//                case BOOLEAN -> booleanValidator.validate(nodeName, nodeValue);
+//                case STRING -> stringValidator.validate(nodeName, nodeValue);
                 default -> {}
             }
         }

@@ -7,21 +7,16 @@ import java.io.File;
 
 public class DataParser {
 
-    private final String validationDataFilename;
-
-    public  DataParser(final String validationDataFilename) {
-        this.validationDataFilename = validationDataFilename;
-    }
-
-    public JsonNode parseData() {
-        var jsonFile = new File(validationDataFilename);
-        var objectMapper = new ObjectMapper();
+    public static JsonNode parseData(String filename) {
+        ObjectMapper objectMapper = new ObjectMapper();
 
         /*
          * The structure of the JSON is not fixed, and the keys can vary.
          */
         try {
-            return objectMapper.readTree(jsonFile);
+            JsonNode node = objectMapper.readTree(new File(filename));
+
+            return node;
         } catch (Exception e) {
             e.printStackTrace();
         }

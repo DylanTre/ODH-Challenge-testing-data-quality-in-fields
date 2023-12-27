@@ -16,7 +16,7 @@ public class ConfigurationTest {
     @Test
     public void loadAndCountValidators() throws FileNotFoundException {
         ConfigParser config = new ConfigParser();
-        config.loadRules(TEST_RULE_CONFIG_YML);
+        config.loadRules();
 
         List<AbstractValidator> validators = config.getGenericValidators();
         assertEquals(3, validators.size());
@@ -24,7 +24,7 @@ public class ConfigurationTest {
     @Test
     public void loadAndCheckValidators() throws FileNotFoundException {
         ConfigParser config = new ConfigParser();
-        config.loadRules(TEST_RULE_CONFIG_YML);
+        config.loadRules();
 
         List<AbstractValidator> validators = config.getGenericValidators();
         int expectedInstances = 0;

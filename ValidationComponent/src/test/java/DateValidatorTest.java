@@ -10,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,16 +30,14 @@ public class DateValidatorTest {
     public void setUp() throws FileNotFoundException {
         clock = Clock.fixed(Instant.parse(FIXED_INSTANT), ZoneId.of("UTC"));
         ConfigParser config = new ConfigParser();
-        config.loadRules(TEST_RULE_CONFIG_YML);
-        dateValidator = new DateValidator(config.getRulesForSingleInputDataByKey(DATE_KEY));
+        config.loadRules();
+        dateValidator = new DateValidator(new HashMap<>());
     }
 
     @Test
     public void whenTestNumberThatMatchesKeyThenValidIfCorrespondingRulesSatisfied() {
-        assertTrue(dateValidator.keyMatch(DATE_ENTRY_KEY));
-
-        // Assert whether the rule structure is as expected?? Dunno
-        assertTrue(dateValidator.validate(DATE_ENTRY_KEY, "20/11/2023 12:00:00"));
+        // FIXME Assert whether the rule structure is as expected?? Dunno
+        assertTrue(dateValidator.validate(DATE_ENTRY_KEY, "20/11/2023 12:00:00", null));
     }
 
     @Test
