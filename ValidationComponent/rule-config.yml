@@ -18,6 +18,13 @@ boolean:
   key_match: bool
   expected: true
 
+list:
+  key_match: list
+  string:
+    value_match: 3
+  number:
+    less_than: 10
+
 object:
   key_match: nestedObject
   validators:
