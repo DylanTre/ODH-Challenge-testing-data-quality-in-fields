@@ -1,5 +1,9 @@
 package it.unibz.utils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
 public class StringUtils {
 
     public static String TRUE_KW = "true";
@@ -38,5 +42,15 @@ public class StringUtils {
     public static Number getNumberFromString(String string) {
         if (!isNumberPattern(string)) return null; //FIXME should be agreed if we want exceptions or defensive approach
         return Double.parseDouble(string);
+    }
+
+    public static boolean isDateTime(String dateTimeString, String pattern) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        try {
+            LocalDateTime.parse(dateTimeString, formatter);
+        } catch (DateTimeParseException ex) {
+            return false;
+        }
+        return true;
     }
 }

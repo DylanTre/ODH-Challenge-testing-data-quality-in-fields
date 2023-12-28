@@ -1,0 +1,39 @@
+{
+  "string": [
+    {
+      "key_match": "title",
+      "value_match": ".t",
+      "required": true
+    },
+
+    {
+      "key_match": "position.AltitudeUnitofMeasure",
+      "type": "string",
+      "enum": ["m", "ft"]
+    },
+
+
+
+    { "field": "configuration.options[0].key", "required": true },
+    { "field": "configuration.options[0].options.default", "required": true }
+  ],
+  "number": [
+    {
+      "field": "position.Latitude",
+      "type": "number",
+      "range": {"min": -90, "max": 90}
+    },
+    {
+      "field": "position.Longitude",
+      "type": "number",
+      "range": {"min": -180, "max": 180}
+    }
+  ],
+  "array": [
+
+  ],
+  "boolean": [
+
+  ]
+
+}

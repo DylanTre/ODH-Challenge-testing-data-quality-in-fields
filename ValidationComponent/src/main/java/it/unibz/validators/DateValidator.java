@@ -1,96 +1,117 @@
 package it.unibz.validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.Setter;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 
+import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-public class DateValidator extends AbstractValidator {
+public class DateValidator extends AbstractValidator<LocalDateTime> {
 
-    private static final String DATE_VIOLATION_KEY = "date";
+    private static final String DATE_VALIDATOR_KEY = "date";
+
+    private static final String RULE_FORMAT_VIOLATION = "Date %s format invalid. Must be %s";
+    private static final String RULE_DAY_OF_WEEK_VIOLATION = "Date %s day of week invalid. Must be %s";
+    private static final String RULE_IS_BEFORE_VIOLATION = "Date %s is not before date %s";
+    private static final String RULE_IS_AFTER_VIOLATION = "Date %s is not after date %s";
 
     private static final String DEFAULT_ITALIAN_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+    public static final Locale ROOT_LOCALE = Locale.ROOT;
 
     private final List<String> dateViolations;
 
-    @Setter
-    private LocalDateTime parsedDate;
-
     public DateValidator(Map<String, List<String>> violations) {
         super(violations);
-
         this.dateViolations = new ArrayList<>();
     }
 
+    @Override
+    public boolean validate(String key, JsonNode inputValue, JsonNode dateValidationRules) {
+        /*
+         * FIXME:
+         *  Improve validation logic and
+         *  validation Scenarios
+         *  ------------------------------------------------
+         *  Always parse the date first when checking format
+         *  only then can continue to check other date-related constraints
+         */
+
+        if (JsonNodeType.STRING != inputValue.getNodeType()) {
+            return false;
+        }
+
+        String dateTimeValue = inputValue.textValue();
+
+        LocalDateTime parsedDate = parseDate(dateTimeValue, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        if (parsedDate == null) {
+            return false;
+        }
+
+        parseRules(dateValidationRules, key, parsedDate);
+        return false;
+    }
 
     @Override
-    public boolean validate(String key, Object inputValue, JsonNode dateValidationRules) {
-        String ruleDescriptorKey;
-        String ruleDescriptorValue;
+    public void applySingleRule(LocalDateTime inputValue, String ruleName, JsonNode ruleValue) {
+        boolean valid;
+        String constrainDateStringValue = ruleValue.textValue();
 
-//        if (keyMatch(, key)) {
-//            if (inputValue instanceof String dateInputValue) {
-//                for (JsonNode node : this.constraints) {
-//                    ruleDescriptorKey = null; //entry.getKey();
-//                    ruleDescriptorValue = null; //(String) entry.getValue();
-//                    /*
-//                     * FIXME:
-//                     *  Improve validation logic and
-//                     *  validation Scenarios
-//                     *  ------------------------------------------------
-//                     *  Always parse the date first when checking format
-//                     *  only then can continue to check other date-related constraints
-//                     */
-//                    if ("key_match".equals(ruleDescriptorKey)) {
-//                        // Ignore key match rule
-//                        continue;
-//                    }
-//
-//                    if ("format".equals(ruleDescriptorKey)) {
-//                        if (!isFormatValid(dateInputValue, DateTimeFormatter.ofPattern(ruleDescriptorValue, Locale.ROOT))) {
-//                            break;
-//                        }
-//                    } else if ("day_of_week".equals(ruleDescriptorKey)) {
-//                        if (!isDateOfWeekValid(parsedDate, DayOfWeek.valueOf(ruleDescriptorValue.toUpperCase(Locale.ROOT)))) {
-//                            break;
-//                        }
-//                    } else if ("is_before".equals(ruleDescriptorKey)) {
-//                        if (!isDateBeforeValid(parsedDate, ruleDescriptorValue)) {
-//                            break;
-//                        }
-//                    } else if ("is_after".equals(ruleDescriptorKey)) {
-//                        if (!isDateAfterValid(parsedDate, ruleDescriptorValue)) {
-//                            break;
-//                        }
-//                    } else {
-//                        throw new NotImplementedException("No method to validate this rule");
-//                    }
-//
-//                }
-//                return true;
-//            }
-//            return false;
-//        }
+        switch (ruleName) {
+            case "key_match" -> {}
+            case "format" -> {
+                valid = isFormatValid(inputValue, constrainDateStringValue);
+                resolveViolation(valid, String.format(RULE_FORMAT_VIOLATION, inputValue, constrainDateStringValue));
+            }
+            case "day_of_week" -> {
+                valid = isDateOfWeekValid(inputValue, DayOfWeek.valueOf(constrainDateStringValue.toUpperCase(ROOT_LOCALE)));
+                resolveViolation(valid, String.format(RULE_DAY_OF_WEEK_VIOLATION, inputValue, constrainDateStringValue));
+            }
+            case "is_before" -> {
+                valid = isDateBeforeValid(inputValue, constrainDateStringValue);
+                resolveViolation(valid, String.format(RULE_IS_BEFORE_VIOLATION, inputValue, constrainDateStringValue));
+            }
+            case "is_after" -> {
+                valid = isDateAfterValid(inputValue, constrainDateStringValue);
+                resolveViolation(valid, String.format(RULE_IS_AFTER_VIOLATION, inputValue, constrainDateStringValue));
+            }
+            default -> throw new IllegalArgumentException("Rule " + ruleName + "unrecognized");
+        }
 
-        violations.put(DATE_VIOLATION_KEY, dateViolations);
-        return false;
+        violations.put(DATE_VALIDATOR_KEY, dateViolations);
     }
 
     @Override
     public void resolveViolation(boolean valid, String violationMessage) {
         if (!valid) {
-            dateViolations.add(DATE_VIOLATION_KEY);
+            dateViolations.add(DATE_VALIDATOR_KEY);
         }
     }
 
+    @Override
+    public String getValidatorKey() {
+        return DATE_VALIDATOR_KEY;
+    }
+
     public boolean isFormatValid(String dateString, DateTimeFormatter acceptedFormat) {
-        parsedDate = parseDate(dateString, acceptedFormat);
-        return parsedDate != null;
+        return parseDate(dateString, acceptedFormat) != null;
+    }
+
+    public static boolean isFormatValid(LocalDateTime dateTime, String expectedFormat) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(expectedFormat);
+            dateTime.format(formatter);
+        } catch (DateTimeException e) {
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -116,7 +137,7 @@ public class DateValidator extends AbstractValidator {
     private LocalDateTime parseDate(String dateToParse, DateTimeFormatter parseFormat) {
         try {
             return LocalDateTime.parse(dateToParse, parseFormat);
-        } catch (RuntimeException ex) {
+        } catch (DateTimeParseException ex) {
             return null;
         }
     }

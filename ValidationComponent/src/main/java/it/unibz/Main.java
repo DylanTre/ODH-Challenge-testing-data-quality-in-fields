@@ -1,13 +1,10 @@
 package it.unibz;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.configuration.ConfigParser;
-import it.unibz.validators.NumberValidator;
-import it.unibz.validators.ObjectValidator;
 import lombok.RequiredArgsConstructor;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @RequiredArgsConstructor
 public class Main {
@@ -18,7 +15,7 @@ public class Main {
          * 2. Get constraints from config
          * 3. Validate for each
          */
-        ConfigParser config = new ConfigParser();
+        ConfigParser config = ConfigParser.getInstance();
 
         try {
             config.loadRules();
@@ -26,13 +23,22 @@ public class Main {
             e.printStackTrace();
         }
 
-        ObjectValidator validator = new ObjectValidator(DataParser.parseData("rule-config.json"));
-        validator.validateJsonNode(DataParser.parseData("validation-data.json"));
 
-        var allValidationRules = config.getValidationRules();
-        NumberValidator numberValidator = new NumberValidator(new HashMap<>());
-        numberValidator.validate("numbero", 253, allValidationRules.get("number"));
+        JsonNode dataToValidate = DataParser.parseData("validation-data.json");
 
-        System.out.println(numberValidator.getViolations());
+//        var allValidationRules = config.getValidationRules();
+//        NumberValidator numberValidator = new NumberValidator(new HashMap<>());
+//        numberValidator.validate("numbero", 253, allValidationRules.get("number"));
+//
+//        System.out.println(numberValidator.getViolations());
+
+        DataValidator dataValidator = new DataValidator(config.getGenericValidators(),
+                config.getValidationRules());
+
+        /*
+         * FIXME idea to call object validator directly to initiate validation since it
+         *  goes through each primitive validator in recursion
+         */
+        dataValidator.validateAll(dataToValidate);
     }
 }

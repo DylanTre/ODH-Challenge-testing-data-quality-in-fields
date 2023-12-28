@@ -1,9 +1,16 @@
 {
-  "number": {
-    "key_match": "num.*",
-    "more_than": 10,
-    "even": true
-  },
+  "number": [
+    {
+      "key_match": "num.*",
+      "more_than": 10,
+      "even": true
+    },
+    {
+      "key_match": "num.*",
+      "less_than": 10,
+      "even": true
+    }
+  ],
   "string": {
     "key_match": ".*",
     "value_match": ".*t"
@@ -27,5 +34,29 @@
   "boolean": {
     "key_match": "bool",
     "expected": true
+  },
+  "list": {
+    "key_match": "areas",
+    ""
+  },
+  "object": {
+    "key_match": "nestedObject",
+    "validators": [
+      {
+        "string": {
+          "key_match": ".*",
+          "value_match": ".*t"
+        }
+      },
+      {
+        "object": {
+          "key_match": "object",
+          "validators": [
+              "string",
+              "number"
+          ]
+        }
+      }
+    ]
   }
 }

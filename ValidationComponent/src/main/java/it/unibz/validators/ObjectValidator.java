@@ -2,45 +2,25 @@ package it.unibz.validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import it.unibz.configuration.ConfigParser;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-@RequiredArgsConstructor
-public class ObjectValidator {
+public class ObjectValidator extends AbstractValidator<Object> {
 
-    private static final String KEY_FILTER_VALUE = "key_match";
+    private static final String OBJECT_VALIDATOR_KEY = "object";
 
-    @Getter
-    private final JsonNode rules;
+    private final List<AbstractValidator> validators;
+    private final List<String> ruleValidatorKeys;
 
-//    private final NumberValidator numberValidator;
-//    private final StringValidator stringValidator;
-//    private final BooleanValidator booleanValidator;
+    public ObjectValidator(Map<String, List<String>> violations) {
+        super(violations);
 
-    public void validateJsonNode(JsonNode jsonNode) {
-        if (jsonNode == null || jsonNode.isEmpty()) {
-            return;
-        } else if (jsonNode.isObject()) {
-            ObjectNode objectNode = (ObjectNode) jsonNode;
-            Iterator<String> fieldNames = objectNode.fieldNames();
-
-            while (fieldNames.hasNext()) {
-                String fieldName = fieldNames.next();
-                JsonNodeType fieldType = objectNode.get(fieldName).getNodeType();
-                JsonNode fieldValue = objectNode.get(fieldName);
-
-                // Perform validation based on the field name and value
-                validateField(fieldType, fieldName, fieldValue, rules);
-
-                // Recursive validation for nested objects
-                if (fieldValue.isObject()) {
-                    validateJsonNode(fieldValue);
-                }
-            }
-        }
+        ConfigParser configParser = ConfigParser.getInstance();
+        this.validators = configParser.getValidators();
+        this.ruleValidatorKeys = new ArrayList<>();
     }
 
 
@@ -68,14 +48,7 @@ public class ObjectValidator {
             return;
         }
 
-        if (keyMatch(nodeName)) {
-            switch (nodeType) {
-//                case NUMBER -> numberValidator.validate(nodeName, nodeValue);
-//                case BOOLEAN -> booleanValidator.validate(nodeName, nodeValue);
-//                case STRING -> stringValidator.validate(nodeName, nodeValue);
-                default -> {}
-            }
-        }
+
 
 //        if (jsonNode.has("key")) {
 //            String fieldValue = jsonNode.get(key).asText();
@@ -85,28 +58,55 @@ public class ObjectValidator {
 //                System.out.println(key + " validation passed");
 //            }
 //        }
+
     }
 
-    public boolean keyMatch(final String key) {
-//        return RegexUtils.regexMatch(rules.get(KEY_FILTER_VALUE), key);
+    @Override
+    public boolean validate(String key, JsonNode inputValue, JsonNode objectValidationRules) {
+        if (JsonNodeType.OBJECT != inputValue.getNodeType()) {
+            return false;
+        }
+
+        parseRules(objectValidationRules, key, inputValue);
         return false;
     }
 
+    @Override
+    protected void applySingleRule(Object inputValue, String ruleName, JsonNode ruleValue) {
+        switch (ruleName) {
+            case "key_match" -> {}
+            case "validators" -> parseRules(ruleValue, inputValue);
+        }
+    }
 
-//    private void validateField(JsonNode jsonNode, String key, Object constraintValues) {
-//        Validator validator;
-//        try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
-//            validator = validatorFactory.getValidator();
-//        }
-//
-//        if (jsonNode.has(key)) {
-//            String fieldValue = jsonNode.get(key).asText();
-//            if (!validateWithConstraints(validator, fieldValue, constraintValues, NumberValidator.class)) {
-//                System.out.println(key + " validation failed");
-//            } else {
-//                System.out.println(key + " validation passed");
-//            }
-//        }
-//    }
+    @Override
+    protected void resolveViolation(boolean valid, String violationMessage) {
 
+    }
+
+    @Override
+    public String getValidatorKey() {
+        return OBJECT_VALIDATOR_KEY;
+    }
+
+    private void parseValidatorRule(JsonNode ruleValue) {
+        if (ruleValue == null || ruleValue.isEmpty()) {
+            return;
+        }
+
+        if (ruleValue.isArray()) {
+            for (JsonNode innerNode : ruleValue) {
+                // Assuming innerNode is in form of "validator_key"
+                ruleValidatorKeys.add(innerNode.textValue());
+            }
+        }
+    }
+
+    private void dkak() {
+        validators.forEach(validator -> {
+            if (!OBJECT_VALIDATOR_KEY.equals(validator.getValidatorKey())) {
+                if (ruleValidatorKeys)
+            }
+        });
+    }
 }

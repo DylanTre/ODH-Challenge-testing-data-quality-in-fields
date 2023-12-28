@@ -3,19 +3,41 @@ package it.unibz.configuration;
 import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.DataParser;
 import it.unibz.validators.AbstractValidator;
+import it.unibz.validators.BooleanValidator;
+import it.unibz.validators.DateValidator;
+import it.unibz.validators.NumberValidator;
+import it.unibz.validators.ObjectValidator;
+import it.unibz.validators.StringValidator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
-@RequiredArgsConstructor
 public class ConfigParser {
     public static final String RULE_CONFIG_FILENAME = "rule-config.json";
     public static final String GENERIC_VALIDATORS_KEY = "generic_rules";
+
+    private static ConfigParser instance;
+
+    @Getter
+    private final List<AbstractValidator> validators;
+
+    // Private constructor to prevent instantiation from outside
+    private ConfigParser() {
+        validators = new ArrayList<>();
+    }
+
+    public synchronized static ConfigParser getInstance() {
+        if (instance == null) {
+            instance = new ConfigParser();
+        }
+        return instance;
+    }
 
     @Getter
     @Setter
@@ -30,21 +52,30 @@ public class ConfigParser {
     }
 
     public List<AbstractValidator> getGenericValidators(){
-        List<AbstractValidator> validators = new ArrayList<>();
 
         //FIXME By construction ob is size=1 this can be improved, to decide if changing the config structure or the code
-        //still, this work but the code is ugly tho
-//        for (Map.Entry<String, List<ValidationRule>> entry : validationRules){
-//            if("number".equals(entry.getKey())){
-//                validators.add(new NumberValidator((Map<String, Object>) entry.getValue()));
-//            } else if("string".equals(entry.getKey())){
-//                validators.add(new StringValidator((Map<String, Object>) entry.getValue()));
-//            } else if("boolean".equals(entry.getKey())){
-//                validators.add(new BooleanValidator((Map<String, Object>) entry.getValue()));
-//            } else if("date".equals(entry.getKey())){
-//                validators.add(new DateValidator((Map<String, Object>) entry.getValue()));
-//            }
-//        }
+//        still, this work but the code is ugly tho
+
+        if (validationRules.get("number") != null) {
+            validators.add(new NumberValidator(new HashMap<>()));
+        }
+
+        if (validationRules.get("string") != null) {
+            validators.add(new StringValidator(new HashMap<>()));
+        }
+
+        if (validationRules.get("boolean") != null) {
+            validators.add(new BooleanValidator(new HashMap<>()));
+        }
+
+        if (validationRules.get("date") != null) {
+            validators.add(new DateValidator(new HashMap<>()));
+        }
+
+        if (validationRules.get("object") != null) {
+            validators.add(new ObjectValidator(new HashMap<>()));
+        }
+
         return validators;
     }
 }
