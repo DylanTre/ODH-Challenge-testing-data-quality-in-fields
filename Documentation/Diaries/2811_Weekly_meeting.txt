@@ -1,0 +1,14 @@
+-----------------------------------------------
+Date: 28-11-2023
+Participants: Justinas Maniusis & Dylan Trenti
+-----------------------------------------------
+
+What we did:
+Spoke about what was done since the last meeting. Added or improved functionality regarding all validators and move to different type of parsing
+
+Results:
+Added or improved functionality regarding validators & work divided until the next meeting
+
+Difficulties:
+None
+
