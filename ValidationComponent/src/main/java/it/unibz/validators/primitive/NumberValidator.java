@@ -6,9 +6,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.validators.AbstractValidator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NumberValidator extends AbstractValidator<Number> {
 
     private static final String NUMBER_VALIDATOR_KEY = "number";

@@ -8,13 +8,11 @@ import it.unibz.utils.RegexUtils;
 import it.unibz.utils.StringUtils;
 import it.unibz.validators.AbstractValidator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class StringValidator extends AbstractValidator<String> {
 
     private static final String STRING_VALIDATOR_KEY = "string";
 
+    private static final String RULE_NAME_PATTERN_VIOLATION = "Field %s name does not match pattern: %s";
     private static final String RULE_VALUE_MATCH_VIOLATION = "Field %s value does not match value: %s";
     private static final String RULE_ENUM_MATCH_VIOLATION = "%s is none of the possible options";
 
@@ -63,9 +61,16 @@ public class StringValidator extends AbstractValidator<String> {
 
         switch (ruleName) {
             case "key_match" -> {}
+
+            // Example There should be possible to associate naming conventions
+            //(using regular expressions) to validation rules.
+            case "name_pattern" -> {
+                valid = isValueMatch(key, constraintStringValue);
+                checkForViolation(valid, String.format(RULE_NAME_PATTERN_VIOLATION, key, constraintStringValue));
+            }
             case "value_match" -> {
                 valid = isValueMatch(inputValue, constraintStringValue);
-                checkForViolation(valid, String.format(RULE_VALUE_MATCH_VIOLATION, inputValue, constraintStringValue));
+                checkForViolation(valid, String.format(RULE_VALUE_MATCH_VIOLATION, key, constraintStringValue));
             }
             case "enum" -> {
                 valid = isOneOf(inputValue, ruleValue);
