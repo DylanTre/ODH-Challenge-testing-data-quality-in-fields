@@ -29,15 +29,16 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
 
     @Override
     public ObjectNode validate(String key, JsonNode inputValue) {
+        ObjectNode listValuesViolations = objectMapper.createObjectNode();
         if (JsonNodeType.ARRAY != inputValue.getNodeType()) {
             return null;
         }
 
         if (keyMatch(validationRules, key)) {
-            arrayViolations = parseInputArrayValues(inputValue);
+            listValuesViolations = parseInputArrayValues(inputValue);
         }
 
-        arrayViolations.putIfAbsent(getValidatorKey(), violationMessages);
+        arrayViolations.putIfAbsent(getValidatorKey(), listValuesViolations);
         return arrayViolations;
     }
 

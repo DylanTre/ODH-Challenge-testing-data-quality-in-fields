@@ -4,11 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.enums.ValidatorType;
 import it.unibz.validators.AbstractValidator;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 // FIXME Maybe it's just one big ObjectValidator?
@@ -47,10 +46,17 @@ public class DataValidator {
 
 
             // FIXME for some reason overrides with null values existing violations
-            validators.forEach((key, validator) ->
-                    violations.setAll(validator.validate(fieldName, fieldValue) == null
-                            ? objectMapper.createObjectNode()
-                            : validator.validate(fieldName, fieldValue)));
+
+
+            AbstractValidator validator = validators.get(ValidatorType.of(fieldValue.getNodeType()));
+
+            if (validator != null) {
+                ObjectNode validationResult = validator.validate(fieldName, fieldValue);
+                violations.setAll(validationResult == null || validationResult.isEmpty()
+                        ? objectMapper.createObjectNode()
+                        : validationResult);
+            }
+
 
 //            validators.forEach((key, validator) ->
 //                    System.out.println(key + "; " + validator.validate(fieldName, fieldValue)));

@@ -8,9 +8,6 @@ import it.unibz.utils.RegexUtils;
 import it.unibz.utils.StringUtils;
 import it.unibz.validators.AbstractValidator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class StringValidator extends AbstractValidator<String> {
 
     private static final String STRING_VALIDATOR_KEY = "string";

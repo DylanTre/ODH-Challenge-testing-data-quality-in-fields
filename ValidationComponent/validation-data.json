@@ -9,5 +9,16 @@
     "object": {
       "a": "test"
     }
-  }]
+  }],
+  "object": {
+    "a": "test",
+    "numb": 22
+  },
+  "nestedObject": {
+    "a": "test",
+    "object": {
+      "a": "test",
+      "numb": 22
+    }
+  }
 }
