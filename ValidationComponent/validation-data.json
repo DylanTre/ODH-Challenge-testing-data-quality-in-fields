@@ -5,23 +5,9 @@
   "numb": 3034,
   "date": "2022-11-19 12:00:00",
   "bool": true,
-  "dd": [1,2,"3"],
-  "coordinates" : {
-    "x" : 233,
-    "y" : 334
-  },
-  "object": {
-    "a": "test",
-    "numb": 22
-  },
-  "nestedObject": {
-    "a": "test",
+  "array": [1, 2, "VAX", {
     "object": {
-      "a": "test",
-      "numb": 22
+      "a": "test"
     }
-  },
-  "configuration.options[*].options.values": [
-    { "type": "array", "required": true }
-  ]
+  }]
 }

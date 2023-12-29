@@ -1,10 +1,9 @@
 import it.unibz.configuration.ConfigParser;
-import it.unibz.validators.BooleanValidator;
+import it.unibz.validators.primitive.BooleanValidator;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 
 public class BooleanValidatorTest {
     public static final String BOOL_KEY = "boolean";
@@ -15,13 +14,13 @@ public class BooleanValidatorTest {
 
     @Before
     public void setUp() throws FileNotFoundException {
-        ConfigParser config = new ConfigParser();
-        config.loadRules();
-        booleanValidator = new BooleanValidator(new HashMap<>());
+        ConfigParser config = ConfigParser.getInstance();
+        config.loadValidationRules();
+        booleanValidator = new BooleanValidator(null);
     }
 
     @Test
     public void booleanValidatorTrue(){
-        booleanValidator.validate(BOOL_KEY, true, null);
+        booleanValidator.validate(BOOL_KEY, true, );
     }
 }

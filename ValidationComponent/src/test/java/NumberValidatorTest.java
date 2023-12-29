@@ -1,10 +1,9 @@
 import it.unibz.configuration.ConfigParser;
-import it.unibz.validators.NumberValidator;
+import it.unibz.validators.primitive.NumberValidator;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,16 +17,16 @@ public class NumberValidatorTest {
 
     @Before
     public void setUp() throws FileNotFoundException {
-        ConfigParser config = new ConfigParser();
-        config.loadRules();
-        numberValidator = new NumberValidator(new HashMap<>());
+        ConfigParser config = ConfigParser.getInstance();
+        config.loadValidationRules();
+        numberValidator = new NumberValidator(null);
     }
 
 
     @Test
     public void whenTestNumberThatMatchesKeyThenValidIfCorrespondingRulesSatisfied() {
         // Assert whether the rule structure is as expected?? Dunno
-        assertTrue(numberValidator.validate(MAGICAL_NUMBER_KEY, 28, null));
+        assertTrue(numberValidator.validate(MAGICAL_NUMBER_KEY, 28, ));
     }
 
 }

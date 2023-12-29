@@ -1,86 +1,57 @@
 package it.unibz.validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.DataValidator;
 import it.unibz.configuration.ConfigParser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ObjectValidator extends AbstractValidator<Object> {
+public class ObjectValidator extends AbstractValidator<JsonNode> {
 
     private static final String OBJECT_VALIDATOR_KEY = "object";
 
-    private final List<AbstractValidator> validators;
-    private final List<String> ruleValidatorKeys;
+    private final Map<String, AbstractValidator> validators;
+    private final DataValidator dataValidator;
+    private final ObjectNode objectViolations;
 
-    public ObjectValidator(Map<String, List<String>> violations) {
-        super(violations);
+    public ObjectValidator(JsonNode validationRules) {
+        super(validationRules);
 
-        ConfigParser configParser = ConfigParser.getInstance();
-        this.validators = configParser.getValidators();
-        this.ruleValidatorKeys = new ArrayList<>();
-    }
-
-
-//    private void validateField(String fieldName, JsonNode fieldValue) {
-//        Validator validator;
-//        try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
-//            validator = validatorFactory.getValidator();
-//
-//
-//        }
-//
-//        Set<ConstraintViolation<JsonNode>> violations = validator.validate(fieldValue);
-//
-//        if (!violations.isEmpty()) {
-//            System.out.println("Validation failed for field '" + fieldName + "':");
-//            for (ConstraintViolation<JsonNode> violation : violations) {
-//                System.out.println(violation.getPropertyPath() + ": " + violation.getMessage());
-//            }
-//        }
-//    }
-
-    private void validateField(JsonNodeType nodeType, String nodeName,
-                               JsonNode nodeValue, JsonNode constraintValues) {
-        if (nodeType == JsonNodeType.OBJECT) {
-            return;
-        }
-
-
-
-//        if (jsonNode.has("key")) {
-//            String fieldValue = jsonNode.get(key).asText();
-//            if (!validateWithConstraints(validator, fieldValue, constraintValues)) {
-//                System.out.println(key + " validation failed");
-//            } else {
-//                System.out.println(key + " validation passed");
-//            }
-//        }
-
+        ConfigParser config = new ConfigParser();
+        this.validators = config.getGenericValidators(getObjectRules());
+        this.dataValidator = new DataValidator(validators);
+        this.objectViolations = getObjectMapper().createObjectNode();
     }
 
     @Override
-    public boolean validate(String key, JsonNode inputValue, JsonNode objectValidationRules) {
+    public ObjectNode validate(String key, JsonNode inputValue) {
         if (JsonNodeType.OBJECT != inputValue.getNodeType()) {
-            return false;
+            return null;
         }
 
-        parseRules(objectValidationRules, key, inputValue);
-        return false;
+        if (keyMatch(validationRules, key)) {
+            objectViolations.putIfAbsent(getValidatorKey(), dataValidator.validateAll(inputValue));
+        }
+
+        return objectViolations;
     }
 
     @Override
-    protected void applySingleRule(Object inputValue, String ruleName, JsonNode ruleValue) {
-        switch (ruleName) {
-            case "key_match" -> {}
-            case "validators" -> parseRules(ruleValue, inputValue);
+    protected void applySingleRule(String key, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
+        /*
+         * Object specific rules
+         */
+        if (ruleName.equals("key_match")) {
         }
     }
 
     @Override
-    protected void resolveViolation(boolean valid, String violationMessage) {
+    protected void checkForViolation(boolean valid, String violationMessage) {
 
     }
 
@@ -89,24 +60,12 @@ public class ObjectValidator extends AbstractValidator<Object> {
         return OBJECT_VALIDATOR_KEY;
     }
 
-    private void parseValidatorRule(JsonNode ruleValue) {
-        if (ruleValue == null || ruleValue.isEmpty()) {
-            return;
-        }
-
-        if (ruleValue.isArray()) {
-            for (JsonNode innerNode : ruleValue) {
-                // Assuming innerNode is in form of "validator_key"
-                ruleValidatorKeys.add(innerNode.textValue());
-            }
+    private JsonNode getObjectRules() {
+        if (validationRules.has("validators")) {
+            return validationRules.get("validators");
+        } else {
+            return validationRules;
         }
     }
 
-    private void dkak() {
-        validators.forEach(validator -> {
-            if (!OBJECT_VALIDATOR_KEY.equals(validator.getValidatorKey())) {
-                if (ruleValidatorKeys)
-            }
-        });
-    }
 }

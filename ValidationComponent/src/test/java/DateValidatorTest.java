@@ -1,5 +1,5 @@
 import it.unibz.configuration.ConfigParser;
-import it.unibz.validators.DateValidator;
+import it.unibz.validators.primitive.DateValidator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,14 +30,14 @@ public class DateValidatorTest {
     public void setUp() throws FileNotFoundException {
         clock = Clock.fixed(Instant.parse(FIXED_INSTANT), ZoneId.of("UTC"));
         ConfigParser config = new ConfigParser();
-        config.loadRules();
+        config.loadValidationRules();
         dateValidator = new DateValidator(new HashMap<>());
     }
 
     @Test
     public void whenTestNumberThatMatchesKeyThenValidIfCorrespondingRulesSatisfied() {
         // FIXME Assert whether the rule structure is as expected?? Dunno
-        assertTrue(dateValidator.validate(DATE_ENTRY_KEY, "20/11/2023 12:00:00", null));
+        assertTrue(dateValidator.validate(DATE_ENTRY_KEY, "20/11/2023 12:00:00", ));
     }
 
     @Test

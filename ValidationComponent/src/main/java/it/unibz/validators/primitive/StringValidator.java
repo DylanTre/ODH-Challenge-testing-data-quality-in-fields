@@ -1,37 +1,43 @@
-package it.unibz.validators;
+package it.unibz.validators.primitive;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.utils.RegexUtils;
 import it.unibz.utils.StringUtils;
+import it.unibz.validators.AbstractValidator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class StringValidator extends AbstractValidator<String> {
 
     private static final String STRING_VALIDATOR_KEY = "string";
 
-    private static final String RULE_VALUE_MATCH_VIOLATION = "String %s does not match value: %s";
-    private static final String RULE_ENUM_MATCH_VIOLATION = "String %s is none of the possible options";
+    private static final String RULE_VALUE_MATCH_VIOLATION = "Field %s value does not match value: %s";
+    private static final String RULE_ENUM_MATCH_VIOLATION = "%s is none of the possible options";
 
-    private final List<String> stringViolations;
+    private final ArrayNode violationMessages;
+    private final ObjectNode stringViolations;
 
-    public StringValidator(Map<String, List<String>> violations) {
-        super(violations);
-        this.stringViolations = new ArrayList<>();
+    public StringValidator(JsonNode validationRules) {
+        super(validationRules);
+
+        this.violationMessages = getObjectMapper().createArrayNode();
+        this.stringViolations = getObjectMapper().createObjectNode();
     }
 
+
     @Override
-    public boolean validate(final String key, JsonNode inputValue, JsonNode stringValidationRules) {
+    public ObjectNode validate(final String key, JsonNode inputValue) {
         /*FIXME
          * Boolean variable should not have more than 1 rule, otherwise it is a list of boolean variables
          * Expect dates and handle them! [Dates should be handled separately though] -- fixed
          */
 
         if (JsonNodeType.STRING != inputValue.getNodeType()) {
-            return false;
+            return null;
         }
 
         String stringValue = inputValue.textValue();
@@ -39,32 +45,34 @@ public class StringValidator extends AbstractValidator<String> {
         // FIXME solve the changing pattern problem
         //  set DEFAULT pattern somehow
         if (StringUtils.isDateTime(stringValue, "yyyy-MM-dd HH:mm:ss")) {
-            return false;
+            return null;
         }
 
-        parseRules(stringValidationRules, key, stringValue);
-        return false;
+        parseJsonObject(key, stringValue, validationRules);
+
+        stringViolations.putIfAbsent(getValidatorKey(), violationMessages);
+        return stringViolations;
     }
 
     @Override
-    public void applySingleRule(String inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySingleRule(String key, String inputValue, String ruleName, JsonNode ruleValue) {
         boolean valid;
-        String constraintStringValue = ruleValue.textValue();
+
+        // toString() instead of textValue() because textValue() returns null for Numbers
+        String constraintStringValue = ruleValue.toString();
 
         switch (ruleName) {
             case "key_match" -> {}
             case "value_match" -> {
                 valid = isValueMatch(inputValue, constraintStringValue);
-                resolveViolation(valid, String.format(RULE_VALUE_MATCH_VIOLATION, inputValue, constraintStringValue));
+                checkForViolation(valid, String.format(RULE_VALUE_MATCH_VIOLATION, inputValue, constraintStringValue));
             }
             case "enum" -> {
                 valid = isOneOf(inputValue, ruleValue);
-                resolveViolation(valid, String.format(RULE_ENUM_MATCH_VIOLATION, inputValue));
+                checkForViolation(valid, String.format(RULE_ENUM_MATCH_VIOLATION, key));
             }
             default -> throw new IllegalArgumentException("Rule " + ruleName + "unrecognized");
         }
-
-        violations.put(STRING_VALIDATOR_KEY, stringViolations);
     }
 
     private boolean isValueMatch(String inputValue, String constraintStringValue) {
@@ -81,9 +89,9 @@ public class StringValidator extends AbstractValidator<String> {
     }
 
     @Override
-    public void resolveViolation(boolean valid, String violationMessage) {
+    public void checkForViolation(boolean valid, String violationMessage) {
         if (!valid) {
-            stringViolations.add(violationMessage);
+            violationMessages.add(violationMessage);
         }
     }
 

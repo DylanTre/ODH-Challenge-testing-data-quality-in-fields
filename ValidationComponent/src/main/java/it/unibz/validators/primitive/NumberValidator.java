@@ -1,11 +1,13 @@
-package it.unibz.validators;
+package it.unibz.validators.primitive;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.validators.AbstractValidator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class NumberValidator extends AbstractValidator<Number> {
 
@@ -19,29 +21,32 @@ public class NumberValidator extends AbstractValidator<Number> {
 
     private static final double TOLERATED_FLOATING_POINT_EQUALITY_DIFFERENCE = 1e-10;
 
-    private final List<String> numberViolations;
+    private final ArrayNode violationMessages;
+    private final ObjectNode numberViolations;
 
-    public NumberValidator(Map<String, List<String>> violations) {
-        super(violations);
+    public NumberValidator(JsonNode validationRules) {
+        super(validationRules);
 
-        this.numberViolations = new ArrayList<>();
+        this.violationMessages = getObjectMapper().createArrayNode();
+        this.numberViolations = getObjectMapper().createObjectNode();
     }
 
 
     @Override
-    public boolean validate(final String key, JsonNode inputValue, JsonNode numberValidationRules) {
+    public ObjectNode validate(final String key, JsonNode inputValue) {
         if (JsonNodeType.NUMBER != inputValue.getNodeType()) {
-            return false;
+            return null;
         }
 
         Number numericValue = inputValue.numberValue();
+        parseJsonObject(key, numericValue, validationRules);
 
-        parseRules(numberValidationRules, key, numericValue);
-        return false;
+        numberViolations.putIfAbsent(getValidatorKey(), violationMessages);
+        return numberViolations;
     }
 
     @Override
-    public void applySingleRule(Number inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySingleRule(String key, Number inputValue, String ruleName, JsonNode ruleValue) {
         boolean valid;
         Number constrainNumberValue = ruleValue.numberValue();
 
@@ -49,39 +54,32 @@ public class NumberValidator extends AbstractValidator<Number> {
             case "key_match" -> {}
             case "more_than" -> {
                 valid = isMoreThan(inputValue, constrainNumberValue);
-                resolveViolation(valid, String.format(RULE_MORE_THAN_VIOLATION, inputValue, constrainNumberValue));
+                checkForViolation(valid, String.format(RULE_MORE_THAN_VIOLATION, inputValue, constrainNumberValue));
             }
             case "less_than" -> {
                 valid = !isMoreThan(inputValue, constrainNumberValue);
-                resolveViolation(valid, String.format(RULE_LESS_THAN_VIOLATION, inputValue, constrainNumberValue));
+                checkForViolation(valid, String.format(RULE_LESS_THAN_VIOLATION, inputValue, constrainNumberValue));
             }
             case "equal" -> {
                 valid = isEqual(inputValue, constrainNumberValue);
-                resolveViolation(valid, String.format(RULE_EQUAL_VIOLATION, inputValue, constrainNumberValue));
+                checkForViolation(valid, String.format(RULE_EQUAL_VIOLATION, inputValue, constrainNumberValue));
             }
             case "even" -> {
                 valid = isEven(inputValue);
-                resolveViolation(valid, String.format(RULE_EVEN_VIOLATION, inputValue));
+                checkForViolation(valid, String.format(RULE_EVEN_VIOLATION, inputValue));
             }
             case "odd" -> {
                 valid = !isEven(inputValue);
-                resolveViolation(valid, String.format(RULE_ODD_VIOLATION, inputValue));
+                checkForViolation(valid, String.format(RULE_ODD_VIOLATION, inputValue));
             }
             default -> throw new IllegalArgumentException("Rule " + ruleName + "unrecognized");
         }
-
-        /*
-         * FIXME
-         *  idea would be instead of just number=[Number 253 is not even]
-         *  have field1=[field1_violations], field2=[field2_violations]
-         */
-        violations.put(NUMBER_VALIDATOR_KEY, numberViolations);
     }
 
     @Override
-    public void resolveViolation(boolean valid, String violationMessage) {
+    public void checkForViolation(boolean valid, String violationMessage) {
         if (!valid) {
-            numberViolations.add(violationMessage);
+            violationMessages.add(violationMessage);
         }
     }
 

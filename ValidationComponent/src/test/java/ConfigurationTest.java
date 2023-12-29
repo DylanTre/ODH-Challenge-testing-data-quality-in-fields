@@ -1,8 +1,8 @@
 import it.unibz.configuration.ConfigParser;
 import it.unibz.validators.AbstractValidator;
-import it.unibz.validators.BooleanValidator;
-import it.unibz.validators.DateValidator;
-import it.unibz.validators.NumberValidator;
+import it.unibz.validators.primitive.BooleanValidator;
+import it.unibz.validators.primitive.DateValidator;
+import it.unibz.validators.primitive.NumberValidator;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -16,7 +16,7 @@ public class ConfigurationTest {
     @Test
     public void loadAndCountValidators() throws FileNotFoundException {
         ConfigParser config = new ConfigParser();
-        config.loadRules();
+        config.loadValidationRules();
 
         List<AbstractValidator> validators = config.getGenericValidators();
         assertEquals(3, validators.size());
@@ -24,7 +24,7 @@ public class ConfigurationTest {
     @Test
     public void loadAndCheckValidators() throws FileNotFoundException {
         ConfigParser config = new ConfigParser();
-        config.loadRules();
+        config.loadValidationRules();
 
         List<AbstractValidator> validators = config.getGenericValidators();
         int expectedInstances = 0;

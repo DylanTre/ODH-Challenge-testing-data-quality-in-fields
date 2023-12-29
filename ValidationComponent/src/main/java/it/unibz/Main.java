@@ -15,10 +15,12 @@ public class Main {
          * 2. Get constraints from config
          * 3. Validate for each
          */
-        ConfigParser config = ConfigParser.getInstance();
+        ConfigParser config = new ConfigParser();
+
+        JsonNode validationRules = null;
 
         try {
-            config.loadRules();
+            validationRules = config.loadValidationRules();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -32,13 +34,13 @@ public class Main {
 //
 //        System.out.println(numberValidator.getViolations());
 
-        DataValidator dataValidator = new DataValidator(config.getGenericValidators(),
-                config.getValidationRules());
+        DataValidator dataValidator = new DataValidator(config.getGenericValidators(validationRules));
 
         /*
          * FIXME idea to call object validator directly to initiate validation since it
          *  goes through each primitive validator in recursion
          */
-        dataValidator.validateAll(dataToValidate);
+
+        System.out.println(dataValidator.validateAll(dataToValidate).toPrettyString());
     }
 }
