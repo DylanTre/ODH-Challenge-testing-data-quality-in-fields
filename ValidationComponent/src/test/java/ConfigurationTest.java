@@ -1,40 +1,45 @@
+import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.configuration.ConfigParser;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.validators.primitive.BooleanValidator;
 import it.unibz.validators.primitive.DateValidator;
 import it.unibz.validators.primitive.NumberValidator;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.io.FileNotFoundException;
-import java.util.List;
+import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 public class ConfigurationTest {
-    public static final String TEST_RULE_CONFIG_YML = "test-rule-config.yml";
+    public static final String TEST_RULE_CONFIG_FILENAME = "test-rule-config.json";
 
-    @Test
-    public void loadAndCountValidators() throws FileNotFoundException {
+    private Map<String, AbstractValidator> validators;
+
+    @Before
+    public void setUp() throws IOException {
         ConfigParser config = new ConfigParser();
-        config.loadValidationRules();
-
-        List<AbstractValidator> validators = config.getGenericValidators();
-        assertEquals(3, validators.size());
+        JsonNode validationRules = config.loadValidationRules(TEST_RULE_CONFIG_FILENAME);
+        validators = config.getGenericValidators(validationRules);
     }
-    @Test
-    public void loadAndCheckValidators() throws FileNotFoundException {
-        ConfigParser config = new ConfigParser();
-        config.loadValidationRules();
 
-        List<AbstractValidator> validators = config.getGenericValidators();
+    @Test
+    public void whenGetGenericValidatorsThenTheirCountMustEqualToThatInFile() {
+        assertEquals(4, validators.size());
+    }
+
+    @Test
+    public void whenGetGenericValidatorsThenTheirCountByTypeMustMatch() {
         int expectedInstances = 0;
+
         //TODO think of a better structure
-        for (AbstractValidator v: validators) {
-            if(v instanceof DateValidator)
+        for (Map.Entry<String, AbstractValidator> validatorEntry : validators.entrySet()) {
+            if (validatorEntry.getValue() instanceof NumberValidator)
                 expectedInstances++;
-            if(v instanceof NumberValidator)
+            if (validatorEntry.getValue() instanceof DateValidator)
                 expectedInstances++;
-            if(v instanceof BooleanValidator)
+            if (validatorEntry.getValue() instanceof BooleanValidator)
                 expectedInstances++;
         }
         assertEquals(validators.size(), expectedInstances);

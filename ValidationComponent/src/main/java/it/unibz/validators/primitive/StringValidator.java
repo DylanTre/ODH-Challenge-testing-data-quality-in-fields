@@ -7,9 +7,12 @@ import it.unibz.utils.StringUtils;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.violation.ViolationMessage;
 
+import java.util.List;
+
 public class StringValidator extends AbstractValidator<String> {
 
     private static final String STRING_VALIDATOR_KEY = "string";
+    public static final List<JsonNodeType> ACCEPTED_TYPES = List.of(JsonNodeType.STRING, JsonNodeType.NUMBER);
 
     private final ObjectNode stringViolations;
 
@@ -45,7 +48,7 @@ public class StringValidator extends AbstractValidator<String> {
         String constraintStringValue = null;
         // toString() instead of textValue() because textValue() returns null for Numbers
         // enum rule can contain list of strings to match
-        if (ruleValue.isTextual()) {
+        if (ACCEPTED_TYPES.contains(ruleValue.getNodeType())) {
             constraintStringValue = ruleValue.toString();
         }
 

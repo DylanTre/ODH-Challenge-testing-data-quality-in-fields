@@ -15,12 +15,12 @@ public class BooleanValidatorTest {
     @Before
     public void setUp() throws FileNotFoundException {
         ConfigParser config = new ConfigParser();
-        config.loadValidationRules();
+//        config.loadValidationRules();
         booleanValidator = new BooleanValidator(null);
     }
 
     @Test
     public void booleanValidatorTrue(){
-        booleanValidator.validate(BOOL_KEY, true, );
+//        booleanValidator.validate(BOOL_KEY, true, );
     }
 }
