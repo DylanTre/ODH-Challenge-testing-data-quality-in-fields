@@ -14,7 +14,7 @@ public class BooleanValidatorTest {
 
     @Before
     public void setUp() throws FileNotFoundException {
-        ConfigParser config = ConfigParser.getInstance();
+        ConfigParser config = new ConfigParser();
         config.loadValidationRules();
         booleanValidator = new BooleanValidator(null);
     }

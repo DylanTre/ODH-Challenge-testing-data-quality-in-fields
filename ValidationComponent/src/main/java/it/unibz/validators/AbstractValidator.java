@@ -40,9 +40,10 @@ public abstract class AbstractValidator<T> {
         }
 
         if (ruleValue.isObject()) {
-            if (ruleValue.has("key_match")
-                    && !keyMatch(ruleValue, inputKey)) {
-                return;
+            if (ruleValue.has("key_match")) {
+                if (!keyMatch(ruleValue, inputKey)) {
+                    return;
+                }
             }
 
             ObjectNode objectNode = (ObjectNode) ruleValue;

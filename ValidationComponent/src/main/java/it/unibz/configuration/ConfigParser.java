@@ -14,7 +14,7 @@ import it.unibz.validators.primitive.StringValidator;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,21 +33,18 @@ public class ConfigParser {
         this.validators = new HashMap<>();
     }
 
-//    public synchronized static ConfigParser getInstance() {
-//        if (instance == null) {
-//            instance = new ConfigParser();
-//        }
-//        return instance;
-//    }
-
-    public JsonNode loadValidationRules() throws FileNotFoundException {
-        return DataParser.parseData(RULE_CONFIG_FILENAME);
+    public JsonNode loadValidationRules(String filename) throws IOException {
+        return DataParser.parseData(filename);
     }
 
+    /**
+     * Retrieves generic validators from the provided JSON node and returns them as a map.
+     *
+     * @param validationRules The JSON node containing validation rules for different validator types.
+     * @return A map of validator keys to their corresponding AbstractValidator instances.
+     * @throws NotImplementedException If a ValidatorType is encountered without a corresponding resolver.
+     */
     public Map<String, AbstractValidator> getGenericValidators(JsonNode validationRules){
-
-        //FIXME By construction ob is size=1 this can be improved, to decide if changing the config structure or the code
-
         for (ValidatorType validatorType : ValidatorType.values()) {
             String key = validatorType.getValidatorKey();
             if (validationRules.get(key) != null) {
@@ -61,6 +58,15 @@ public class ConfigParser {
         return validators;
     }
 
+    /**
+     * Resolves and returns the appropriate AbstractValidator based on the provided ValidatorType
+     * and its corresponding validation rules.
+     *
+     * @param validatorType The type of validator to be resolved.
+     * @param validationRules The JSON node containing validation rules for the specified validator type.
+     * @return An instance of AbstractValidator corresponding to the provided validator type.
+     * @throws NotImplementedException If a ValidatorType is encountered without a corresponding resolver.
+     */
     private AbstractValidator resolveValidator(ValidatorType validatorType, JsonNode validationRules) {
         return switch (validatorType) {
             case NUMBER -> new NumberValidator(validationRules);

@@ -3,6 +3,7 @@ package it.unibz.validators.primitive;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.configuration.ValidatorConstants;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.violation.ViolationMessage;
 
@@ -11,15 +12,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
 
 public class DateValidator extends AbstractValidator<LocalDateTime> {
 
     private static final String DATE_VALIDATOR_KEY = "date";
 
-    private static final String DEFAULT_ITALIAN_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
-    public static final Locale ROOT_LOCALE = Locale.ROOT;
-
+    private static final String DEFAULT_ITALIAN_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final ObjectNode dateViolations;
 
     public DateValidator(JsonNode validationRules) {
@@ -32,9 +30,6 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
     public ObjectNode validate(String key, JsonNode inputValue) {
         /*
          * FIXME:
-         *  Improve validation logic and
-         *  validation Scenarios
-         *  ------------------------------------------------
          *  Always parse the date first when checking format
          *  only then can continue to check other date-related constraints
          */
@@ -70,7 +65,8 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
                     ViolationMessage.RULE_FORMAT_VIOLATION,
                     inputValue, constrainDateStringValue);
 
-            case "day_of_week" -> checkForViolation(isDateOfWeekValid(inputValue, DayOfWeek.valueOf(constrainDateStringValue.toUpperCase(ROOT_LOCALE))),
+            case "day_of_week" -> checkForViolation(isDateOfWeekValid(inputValue,
+                            DayOfWeek.valueOf(constrainDateStringValue.toUpperCase(ValidatorConstants.ROOT_LOCALE))),
                     ViolationMessage.RULE_DAY_OF_WEEK_VIOLATION,
                     inputValue, constrainDateStringValue);
 

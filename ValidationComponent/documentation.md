@@ -134,7 +134,6 @@ It is also possible to provided multiple rules for `boolean` input.
 
 ## Date Rules
 
-- `format:string`: Validates if the string date format equals the provided one.
 - `day_of_week:string`: Validates if the string date day of week equals the provided one. The provided date **must** match one of days of the week (independent of the case)
 - `before:string`: Validates if the string date is before the provided one
 - `after:string`: Validates if the string date is after the provided one

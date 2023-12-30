@@ -22,19 +22,23 @@ public class DataValidator {
     }
 
 
-    // Assumes that the input Map contains leaves
     public ObjectNode validateAll(JsonNode dataToValidate) {
         ObjectNode violations = objectMapper.createObjectNode();
 
-        ObjectNode objectNode = (ObjectNode) dataToValidate;
-        Iterator<String> fieldNames = objectNode.fieldNames();
+        if (dataToValidate == null) {
+            return violations;
+        }
 
-        while (fieldNames.hasNext()) {
-            String fieldName = fieldNames.next();
-            JsonNode fieldValue = objectNode.get(fieldName);
+        if (dataToValidate.isObject()) {
+            ObjectNode objectNode = (ObjectNode) dataToValidate;
+            Iterator<String> fieldNames = objectNode.fieldNames();
 
-            if (enableStrToPrimitive && JsonNodeType.STRING == fieldValue.getNodeType()) {
-                String entryStringValue = fieldValue.toString();
+            while (fieldNames.hasNext()) {
+                String fieldName = fieldNames.next();
+                JsonNode fieldValue = objectNode.get(fieldName);
+
+                if (enableStrToPrimitive && JsonNodeType.STRING == fieldValue.getNodeType()) {
+                    String entryStringValue = fieldValue.toString();
 
 //                if (StringUtils.isBoolean(entryStringValue)){
 //                    fieldValue = StringUtils.getBooleanFromString(entryStringValue);
@@ -42,22 +46,25 @@ public class DataValidator {
 //                if (StringUtils.isNumber(entryStringValue)){
 //                    fieldValue = StringUtils.getNumberFromString(entryStringValue);
 //                }
+                }
+
+                applyValidator(fieldName, fieldValue, violations);
             }
-
-            AbstractValidator validator = validators.get(ValidatorType.of(fieldValue.getNodeType()));
-
-            if (validator != null) {
-                ObjectNode validationResult = validator.validate(fieldName, fieldValue);
-                violations.setAll(validationResult == null || validationResult.isEmpty()
-                        ? objectMapper.createObjectNode()
-                        : validationResult);
-            }
-
-
-//            validators.forEach((key, validator) ->
-//                    System.out.println(key + "; " + validator.validate(fieldName, fieldValue)));
+        } else {
+            applyValidator(null, dataToValidate, violations);
         }
 
         return violations;
+    }
+
+    private void applyValidator(String fieldName, JsonNode fieldValue, ObjectNode violations) {
+        AbstractValidator validator = validators.get(ValidatorType.of(fieldValue.getNodeType()));
+
+        if (validator != null) {
+            ObjectNode validationResult = validator.validate(fieldName, fieldValue);
+            violations.setAll(validationResult == null || validationResult.isEmpty()
+                    ? objectMapper.createObjectNode()
+                    : validationResult);
+        }
     }
 }
