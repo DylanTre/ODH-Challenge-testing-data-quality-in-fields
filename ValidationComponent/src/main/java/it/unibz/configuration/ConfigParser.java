@@ -21,9 +21,6 @@ import java.util.Map;
 
 @Getter
 public class ConfigParser {
-    public static final String RULE_CONFIG_FILENAME = "rule-config.json";
-    public static final String GENERIC_VALIDATORS_KEY = "generic_rules";
-
     private final Map<String, AbstractValidator> validators;
 
     @Setter

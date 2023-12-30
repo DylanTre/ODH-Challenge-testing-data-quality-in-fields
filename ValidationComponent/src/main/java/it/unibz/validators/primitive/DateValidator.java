@@ -61,10 +61,6 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
                     ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
                     key, ruleValue.textValue());
 
-            case "format" -> checkForViolation(isFormatValid(inputValue, constrainDateStringValue),
-                    ViolationMessage.RULE_FORMAT_VIOLATION,
-                    inputValue, constrainDateStringValue);
-
             case "day_of_week" -> checkForViolation(isDateOfWeekValid(inputValue,
                             DayOfWeek.valueOf(constrainDateStringValue.toUpperCase(ValidatorConstants.ROOT_LOCALE))),
                     ViolationMessage.RULE_DAY_OF_WEEK_VIOLATION,
@@ -87,36 +83,20 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
         return DATE_VALIDATOR_KEY;
     }
 
-    public boolean isFormatValid(String dateString, DateTimeFormatter acceptedFormat) {
-        return parseDate(dateString, acceptedFormat) != null;
-    }
-
-    public static boolean isFormatValid(LocalDateTime dateTime, String expectedFormat) {
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(expectedFormat);
-            dateTime.format(formatter);
-        } catch (DateTimeException e) {
-            return false;
-        }
-
-        return true;
-    }
-
-
-    public boolean isDateOfWeekValid(LocalDateTime parsedDate, DayOfWeek dayOfWeek) {
+    private boolean isDateOfWeekValid(LocalDateTime parsedDate, DayOfWeek dayOfWeek) {
         return parsedDate.getDayOfWeek() == dayOfWeek;
     }
 
     /*
      * Accepted dates come as a String from a JSON object
      */
-    public boolean isDateBeforeValid(LocalDateTime parsedDate, String acceptedBeforeDateString) {
+    private boolean isDateBeforeValid(LocalDateTime parsedDate, String acceptedBeforeDateString) {
         LocalDateTime parsedBeforeDate = parseDate(acceptedBeforeDateString,
                 DateTimeFormatter.ofPattern(DEFAULT_ITALIAN_DATE_TIME_FORMAT));
         return parsedBeforeDate != null && parsedDate.isBefore(parsedBeforeDate);
     }
 
-    public boolean isDateAfterValid(LocalDateTime parsedDate, String acceptedAfterDateString) {
+    private boolean isDateAfterValid(LocalDateTime parsedDate, String acceptedAfterDateString) {
         LocalDateTime parsedAfterDate = parseDate(acceptedAfterDateString,
                 DateTimeFormatter.ofPattern(DEFAULT_ITALIAN_DATE_TIME_FORMAT));
         return parsedAfterDate != null && parsedDate.isAfter(parsedAfterDate);

@@ -72,11 +72,11 @@ public class NumberValidator extends AbstractValidator<Number> {
         return NUMBER_VALIDATOR_KEY;
     }
 
-    public <T extends Number> boolean isMoreThan(T number, Number numberToCompare) {
+    private <T extends Number> boolean isMoreThan(T number, Number numberToCompare) {
         return number != null && number.doubleValue() - numberToCompare.doubleValue() > 0;
     }
 
-    public <T extends Number> boolean isEqual(T number, Number numberToCompare) {
+    private <T extends Number> boolean isEqual(T number, Number numberToCompare) {
         return number != null
                 && Math.abs(number.doubleValue() - numberToCompare.doubleValue()) < TOLERATED_FLOATING_POINT_EQUALITY_DIFFERENCE;
     }
@@ -84,7 +84,7 @@ public class NumberValidator extends AbstractValidator<Number> {
     /*
      * This method serves both even and odd number cases
      */
-    public  boolean isEven(Number number) {
+    private  boolean isEven(Number number) {
         // FIXME how to deal with double throw immediate exception or just return false?
         if (number instanceof Double) {
             return false;
@@ -92,7 +92,7 @@ public class NumberValidator extends AbstractValidator<Number> {
         return number != null && number.longValue() % 2 == 0;
     }
 
-    public boolean isNaNOrInfinite(Double number) {
+    private boolean isNaNOrInfinite(Double number) {
         return number != null && (Double.isNaN(number) || Double.isInfinite(number));
     }
 
