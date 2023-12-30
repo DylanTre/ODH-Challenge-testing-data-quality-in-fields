@@ -6,13 +6,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.DataValidator;
 import it.unibz.configuration.ConfigParser;
 
-import java.util.Map;
-
 public class ObjectValidator extends AbstractValidator<JsonNode> {
 
     private static final String OBJECT_VALIDATOR_KEY = "object";
 
-    private final Map<String, AbstractValidator> validators;
     private final DataValidator dataValidator;
     private final ObjectNode objectViolations;
 
@@ -20,8 +17,7 @@ public class ObjectValidator extends AbstractValidator<JsonNode> {
         super(validationRules);
 
         ConfigParser config = new ConfigParser();
-        this.validators = config.getGenericValidators(getObjectRules());
-        this.dataValidator = new DataValidator(validators);
+        this.dataValidator = new DataValidator(config.getGenericValidators(getObjectRules()));
         this.objectViolations = getObjectMapper().createObjectNode();
     }
 
@@ -43,13 +39,6 @@ public class ObjectValidator extends AbstractValidator<JsonNode> {
         /*
          * Object specific rules
          */
-        if (ruleName.equals("key_match")) {
-        }
-    }
-
-    @Override
-    protected void checkForViolation(boolean valid, String violationMessage) {
-
     }
 
     @Override

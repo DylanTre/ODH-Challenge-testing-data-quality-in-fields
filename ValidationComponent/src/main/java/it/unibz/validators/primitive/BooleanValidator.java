@@ -1,24 +1,20 @@
 package it.unibz.validators.primitive;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.validators.AbstractValidator;
+import it.unibz.violation.ViolationMessage;
 
 public class BooleanValidator extends AbstractValidator<Boolean> {
 
     private static final String BOOLEAN_VALIDATOR_KEY = "boolean";
 
-    private static final String RULE_EXPECTED_VIOLATION = "%s was expected to be %s";
-
-    private final ArrayNode violationMessages;
     private final ObjectNode booleanViolations;
 
     public BooleanValidator(JsonNode validationRules) {
         super(validationRules);
 
-        this.violationMessages = getObjectMapper().createArrayNode();
         this.booleanViolations = getObjectMapper().createObjectNode();
     }
 
@@ -41,24 +37,20 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
         /*
          * Boolean variable should not have more than 1 rule, otherwise it is a list of boolean variables
          */
-        boolean valid;
         boolean constrainBooleanValue = ruleValue.booleanValue();
 
         switch (ruleName) {
             case "key_match" -> {}
-            case "expected" -> {
-                valid = inputValue == constrainBooleanValue;
-                checkForViolation(valid, String.format(RULE_EXPECTED_VIOLATION, key, constrainBooleanValue));
-            }
-            default -> throw new IllegalArgumentException("Rule " + ruleName + "unrecognized");
+            case "expected" -> checkForViolation(isValueAsExpected(inputValue, constrainBooleanValue),
+                    ViolationMessage.RULE_EXPECTED_VIOLATION,
+                    key, constrainBooleanValue);
+
+            default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }
     }
 
-    @Override
-    public void checkForViolation(boolean valid, String violationMessage) {
-        if (!valid) {
-            violationMessages.add(violationMessage);
-        }
+    private boolean isValueAsExpected(boolean inputValue, boolean constrainBooleanValue) {
+        return inputValue == constrainBooleanValue;
     }
 
     @Override

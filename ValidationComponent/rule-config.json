@@ -2,7 +2,7 @@
   "number": [
     {
       "key_match": "num.*",
-      "more_than": 10,
+      "min": 10,
       "even": true
     }
   ],
@@ -21,7 +21,7 @@
       "value_match": 3
     },
     "number": {
-      "less_than": 10
+      "max": 10
     }
   },
   "object": {
@@ -34,8 +34,12 @@
       "object": {
         "key_match": "object",
         "validators": [
-            "string",
-            "number"
+          {
+            "string": {
+              "key_match": "ra.*",
+              "value_match": ".*t"
+            }
+          }
         ]
       }
     }

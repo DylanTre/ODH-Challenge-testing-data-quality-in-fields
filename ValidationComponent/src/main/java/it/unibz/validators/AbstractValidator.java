@@ -3,6 +3,7 @@ package it.unibz.validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.utils.RegexUtils;
 import lombok.Getter;
@@ -17,10 +18,13 @@ public abstract class AbstractValidator<T> {
     protected final ObjectMapper objectMapper;
     @Getter
     protected final JsonNode validationRules;
+    @Getter
+    protected final ArrayNode violationMessages;
 
     protected AbstractValidator(final JsonNode validationRules){
-        this.validationRules = validationRules;
         this.objectMapper = new ObjectMapper();
+        this.validationRules = validationRules;
+        this.violationMessages = getObjectMapper().createArrayNode();
     }
 
     public boolean keyMatch(final JsonNode node, final String key) {
@@ -57,7 +61,6 @@ public abstract class AbstractValidator<T> {
                     }
                 }
 
-                // CAll some hook method that is abstract and then implement specific object type in each validator
                 // Perform validation based on the field name and value
                 applySingleRule(inputKey, inputValue, ruleFieldName, fieldFieldValue);
             }
@@ -69,11 +72,20 @@ public abstract class AbstractValidator<T> {
         }
     }
 
+    protected void checkForViolation(boolean ruleSatisfied, String violationMessage, Object... messageParameters) {
+        if (!ruleSatisfied) {
+            violationMessages.add(String.format(violationMessage, messageParameters));
+        }
+    }
+
+    protected boolean isValueMatch(String inputValue, String constraintStringValue) {
+        return RegexUtils.regexMatch(constraintStringValue, inputValue);
+    }
+
     /*
      * Data to validate comes as a JSON
      */
     public abstract ObjectNode validate(String key, JsonNode inputValue);
     protected abstract void applySingleRule(String key, T inputValue, String ruleName, JsonNode ruleValue);
-    protected abstract void checkForViolation(boolean valid, String violationMessage);
     public abstract String getValidatorKey();
 }

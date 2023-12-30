@@ -1,10 +1,10 @@
 package it.unibz.validators.primitive;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.validators.AbstractValidator;
+import it.unibz.violation.ViolationMessage;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
@@ -17,21 +17,14 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
 
     private static final String DATE_VALIDATOR_KEY = "date";
 
-    private static final String RULE_FORMAT_VIOLATION = "Date %s format invalid. Must be %s";
-    private static final String RULE_DAY_OF_WEEK_VIOLATION = "Date %s day of week invalid. Must be %s";
-    private static final String RULE_IS_BEFORE_VIOLATION = "Date %s is not before date %s";
-    private static final String RULE_IS_AFTER_VIOLATION = "Date %s is not after date %s";
-
     private static final String DEFAULT_ITALIAN_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
     public static final Locale ROOT_LOCALE = Locale.ROOT;
 
-    private final ArrayNode violationMessages;
     private final ObjectNode dateViolations;
 
     public DateValidator(JsonNode validationRules) {
         super(validationRules);
 
-        this.violationMessages = getObjectMapper().createArrayNode();
         this.dateViolations = getObjectMapper().createObjectNode();
     }
 
@@ -58,41 +51,38 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
         }
 
         parseJsonObject(key, parsedDate, validationRules);
-        dateViolations.put(getValidatorKey(), violationMessages);
+        dateViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return dateViolations;
     }
 
     @Override
     public void applySingleRule(String key, LocalDateTime inputValue, String ruleName, JsonNode ruleValue) {
-        boolean valid;
         String constrainDateStringValue = ruleValue.textValue();
 
         switch (ruleName) {
             case "key_match" -> {}
-            case "format" -> {
-                valid = isFormatValid(inputValue, constrainDateStringValue);
-                checkForViolation(valid, String.format(RULE_FORMAT_VIOLATION, inputValue, constrainDateStringValue));
-            }
-            case "day_of_week" -> {
-                valid = isDateOfWeekValid(inputValue, DayOfWeek.valueOf(constrainDateStringValue.toUpperCase(ROOT_LOCALE)));
-                checkForViolation(valid, String.format(RULE_DAY_OF_WEEK_VIOLATION, inputValue, constrainDateStringValue));
-            }
-            case "is_before" -> {
-                valid = isDateBeforeValid(inputValue, constrainDateStringValue);
-                checkForViolation(valid, String.format(RULE_IS_BEFORE_VIOLATION, inputValue, constrainDateStringValue));
-            }
-            case "is_after" -> {
-                valid = isDateAfterValid(inputValue, constrainDateStringValue);
-                checkForViolation(valid, String.format(RULE_IS_AFTER_VIOLATION, inputValue, constrainDateStringValue));
-            }
-            default -> throw new IllegalArgumentException("Rule " + ruleName + "unrecognized");
-        }
-    }
 
-    @Override
-    public void checkForViolation(boolean valid, String violationMessage) {
-        if (!valid) {
-            violationMessages.add(DATE_VALIDATOR_KEY);
+            case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
+                    ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
+                    key, ruleValue.textValue());
+
+            case "format" -> checkForViolation(isFormatValid(inputValue, constrainDateStringValue),
+                    ViolationMessage.RULE_FORMAT_VIOLATION,
+                    inputValue, constrainDateStringValue);
+
+            case "day_of_week" -> checkForViolation(isDateOfWeekValid(inputValue, DayOfWeek.valueOf(constrainDateStringValue.toUpperCase(ROOT_LOCALE))),
+                    ViolationMessage.RULE_DAY_OF_WEEK_VIOLATION,
+                    inputValue, constrainDateStringValue);
+
+            case "before" -> checkForViolation(isDateBeforeValid(inputValue, constrainDateStringValue),
+                    ViolationMessage.RULE_IS_BEFORE_VIOLATION,
+                    inputValue, constrainDateStringValue);
+
+            case "after" -> checkForViolation(isDateAfterValid(inputValue, constrainDateStringValue),
+                    ViolationMessage.RULE_IS_AFTER_VIOLATION,
+                    inputValue, constrainDateStringValue);
+
+            default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }
     }
 

@@ -1,11 +1,11 @@
 package it.unibz.validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.configuration.ConfigParser;
 import it.unibz.enums.ValidatorType;
+import it.unibz.violation.ViolationMessage;
 
 import java.util.Map;
 
@@ -13,9 +13,8 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
 
     private static final String ARRAY_VALIDATOR_KEY = "array";
 
-    private final ArrayNode violationMessages;
     private final Map<String, AbstractValidator> validators;
-    private ObjectNode arrayViolations;
+    private final ObjectNode arrayViolations;
 
     public ArrayValidator(JsonNode validationRules) {
         super(validationRules);
@@ -23,7 +22,6 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
         ConfigParser config = new ConfigParser();
         this.validators = config.getGenericValidators(validationRules);
 
-        this.violationMessages = getObjectMapper().createArrayNode();
         this.arrayViolations = getObjectMapper().createObjectNode();
     }
 
@@ -44,25 +42,17 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
 
     @Override
     protected void applySingleRule(String key, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
-        boolean valid;
         switch (ruleName) {
             case "key_match" -> {}
-            case "contains" -> {
-                valid = isListContainsValues(inputValue, ruleValue);
-                checkForViolation(valid, String.format("List %s does not contain %s", key, ruleValue));
-            }
-            case "type" -> {
-                valid = isCorrectType(inputValue, ruleValue);
-                checkForViolation(valid, String.format("List %s has more items than of type %s", key, ruleValue));
-            }
-            default -> throw new IllegalArgumentException("Rule " + ruleName + "unrecognized");
-        }
-    }
+            case "contains" -> checkForViolation(isListContainsValues(inputValue, ruleValue),
+                    ViolationMessage.RULE_ARRAY_CONTAINS_VIOLATION,
+                    key, ruleValue);
 
-    @Override
-    protected void checkForViolation(boolean valid, String violationMessage) {
-        if (!valid) {
-            violationMessages.add(violationMessage);
+            case "type" -> checkForViolation(isCorrectType(inputValue, ruleValue),
+                    ViolationMessage.RULE_ARRAY_CORRECT_TYPE_VIOLATION,
+                    key, ruleValue);
+
+            default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }
     }
 
