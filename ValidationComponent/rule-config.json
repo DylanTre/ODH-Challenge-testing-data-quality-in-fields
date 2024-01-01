@@ -4,6 +4,9 @@
       "key_match": "num.*",
       "min": 10,
       "even": true
+    },
+    {
+      "max": 500
     }
   ],
   "string": {

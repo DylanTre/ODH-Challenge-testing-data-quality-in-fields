@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.configuration.ConfigParser;
 import it.unibz.validators.AbstractValidator;
+import it.unibz.validators.ObjectValidator;
 import it.unibz.validators.primitive.BooleanValidator;
 import it.unibz.validators.primitive.DateValidator;
 import it.unibz.validators.primitive.NumberValidator;
@@ -40,6 +41,8 @@ public class ConfigurationTest {
             if (validatorEntry.getValue() instanceof DateValidator)
                 expectedInstances++;
             if (validatorEntry.getValue() instanceof BooleanValidator)
+                expectedInstances++;
+            if (validatorEntry.getValue() instanceof ObjectValidator)
                 expectedInstances++;
         }
         assertEquals(validators.size(), expectedInstances);

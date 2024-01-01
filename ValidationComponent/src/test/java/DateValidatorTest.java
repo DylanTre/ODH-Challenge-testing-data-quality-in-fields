@@ -1,19 +1,11 @@
 import it.unibz.configuration.ConfigParser;
 import it.unibz.validators.primitive.DateValidator;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.io.FileNotFoundException;
 import java.time.Clock;
-import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class DateValidatorTest {
 

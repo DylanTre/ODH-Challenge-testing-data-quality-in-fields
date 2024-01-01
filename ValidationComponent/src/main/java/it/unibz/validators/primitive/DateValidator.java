@@ -7,7 +7,6 @@ import it.unibz.configuration.ValidatorConstants;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.violation.ViolationMessage;
 
-import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

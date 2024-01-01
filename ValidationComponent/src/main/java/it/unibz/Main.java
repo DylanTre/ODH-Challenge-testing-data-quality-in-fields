@@ -3,6 +3,7 @@ package it.unibz;
 import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.configuration.ConfigParser;
 import it.unibz.configuration.ValidatorConstants;
+import it.unibz.utils.FileUtils;
 
 import java.io.IOException;
 
@@ -23,7 +24,8 @@ public class Main {
             JsonNode dataToValidate = DataParser.parseData(ValidatorConstants.VALIDATION_INPUT_FILENAME);
             DataValidator dataValidator = new DataValidator(config.getGenericValidators(validationRules));
 
-            System.out.println(dataValidator.validateAll(dataToValidate).toPrettyString());
+            FileUtils.writeToFile(ValidatorConstants.VALIDATION_OUTPUT_FILENAME,
+                    dataValidator.validateAll(dataToValidate));
         } catch (IOException e) {
             e.printStackTrace();
         }
