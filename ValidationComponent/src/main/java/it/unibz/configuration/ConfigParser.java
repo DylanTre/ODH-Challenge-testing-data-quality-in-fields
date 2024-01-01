@@ -3,7 +3,6 @@ package it.unibz.configuration;
 import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.DataParser;
 import it.unibz.enums.ValidatorType;
-import it.unibz.exception.NotImplementedException;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.validators.ArrayValidator;
 import it.unibz.validators.ObjectValidator;
@@ -39,7 +38,7 @@ public class ConfigParser {
      *
      * @param validationRules The JSON node containing validation rules for different validator types.
      * @return A map of validator keys to their corresponding AbstractValidator instances.
-     * @throws NotImplementedException If a ValidatorType is encountered without a corresponding resolver.
+     * @throws IllegalArgumentException If a ValidatorType is encountered without a corresponding resolver.
      */
     public Map<String, AbstractValidator> getGenericValidators(JsonNode validationRules){
         for (ValidatorType validatorType : ValidatorType.values()) {
@@ -62,7 +61,7 @@ public class ConfigParser {
      * @param validatorType The type of validator to be resolved.
      * @param validationRules The JSON node containing validation rules for the specified validator type.
      * @return An instance of AbstractValidator corresponding to the provided validator type.
-     * @throws NotImplementedException If a ValidatorType is encountered without a corresponding resolver.
+     * @throws IllegalArgumentException If a ValidatorType is encountered without a corresponding resolver.
      */
     private AbstractValidator resolveValidator(ValidatorType validatorType, JsonNode validationRules) {
         return switch (validatorType) {
@@ -72,7 +71,7 @@ public class ConfigParser {
             case DATE -> new DateValidator(validationRules);
             case OBJECT -> new ObjectValidator(validationRules);
             case ARRAY -> new ArrayValidator(validationRules);
-            default -> throw new NotImplementedException(String.format("Validator of type %s undefined",
+            default -> throw new IllegalArgumentException(String.format("Validator of type %s undefined",
                     validatorType));
         };
     }
