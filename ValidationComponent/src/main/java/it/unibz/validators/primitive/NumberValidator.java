@@ -43,6 +43,10 @@ public class NumberValidator extends AbstractValidator<Number> {
         switch (ruleName) {
             case "key_match" -> {}
 
+            case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
+                    ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
+                    key, ruleValue.textValue());
+
             case "min" -> checkForViolation(isMoreThan(inputValue, constrainNumberValue),
                     ViolationMessage.RULE_MORE_THAN_VIOLATION,
                     inputValue, constrainNumberValue);

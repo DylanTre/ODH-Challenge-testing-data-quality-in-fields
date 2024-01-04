@@ -37,10 +37,16 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
         /*
          * Boolean variable should not have more than 1 rule, otherwise it is a list of boolean variables
          */
+
         boolean constrainBooleanValue = ruleValue.booleanValue();
 
         switch (ruleName) {
             case "key_match" -> {}
+
+            case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
+                    ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
+                    key, ruleValue.textValue());
+
             case "expected" -> checkForViolation(isValueAsExpected(inputValue, constrainBooleanValue),
                     ViolationMessage.RULE_EXPECTED_VIOLATION,
                     key, constrainBooleanValue);

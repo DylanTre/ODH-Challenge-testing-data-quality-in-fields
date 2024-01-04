@@ -4,19 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.configuration.ValidatorConstants;
+import it.unibz.utils.DateUtils;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.violation.ViolationMessage;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class DateValidator extends AbstractValidator<LocalDateTime> {
 
     private static final String DATE_VALIDATOR_KEY = "date";
 
-    private static final String DEFAULT_ITALIAN_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private final ObjectNode dateViolations;
 
     public DateValidator(JsonNode validationRules) {
@@ -27,19 +25,13 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
 
     @Override
     public ObjectNode validate(String key, JsonNode inputValue) {
-        /*
-         * FIXME:
-         *  Always parse the date first when checking format
-         *  only then can continue to check other date-related constraints
-         */
-
         if (JsonNodeType.STRING != inputValue.getNodeType()) {
             return null;
         }
 
         String dateTimeValue = inputValue.textValue();
 
-        LocalDateTime parsedDate = parseDate(dateTimeValue, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        LocalDateTime parsedDate = DateUtils.parseDate(dateTimeValue);
         if (parsedDate == null) {
             return null;
         }
@@ -54,16 +46,19 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
         String constrainDateStringValue = ruleValue.textValue();
 
         switch (ruleName) {
-            case "key_match" -> {}
+            case "key_match" -> {
+            }
 
             case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
                     ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
                     key, ruleValue.textValue());
 
-            case "day_of_week" -> checkForViolation(isDateOfWeekValid(inputValue,
-                            DayOfWeek.valueOf(constrainDateStringValue.toUpperCase(ValidatorConstants.ROOT_LOCALE))),
-                    ViolationMessage.RULE_DAY_OF_WEEK_VIOLATION,
-                    inputValue, constrainDateStringValue);
+            case "day_of_week" -> {
+                String dayOfWeek = constrainDateStringValue.toUpperCase(ValidatorConstants.ROOT_LOCALE);
+                checkForViolation(isDateOfWeekValid(inputValue, DayOfWeek.valueOf(dayOfWeek)),
+                        ViolationMessage.RULE_DAY_OF_WEEK_VIOLATION,
+                        inputValue, inputValue.getDayOfWeek(), dayOfWeek);
+            }
 
             case "before" -> checkForViolation(isDateBeforeValid(inputValue, constrainDateStringValue),
                     ViolationMessage.RULE_IS_BEFORE_VIOLATION,
@@ -90,22 +85,13 @@ public class DateValidator extends AbstractValidator<LocalDateTime> {
      * Accepted dates come as a String from a JSON object
      */
     private boolean isDateBeforeValid(LocalDateTime parsedDate, String acceptedBeforeDateString) {
-        LocalDateTime parsedBeforeDate = parseDate(acceptedBeforeDateString,
-                DateTimeFormatter.ofPattern(DEFAULT_ITALIAN_DATE_TIME_FORMAT));
+        LocalDateTime parsedBeforeDate = DateUtils.parseDate(acceptedBeforeDateString);
         return parsedBeforeDate != null && parsedDate.isBefore(parsedBeforeDate);
     }
 
     private boolean isDateAfterValid(LocalDateTime parsedDate, String acceptedAfterDateString) {
-        LocalDateTime parsedAfterDate = parseDate(acceptedAfterDateString,
-                DateTimeFormatter.ofPattern(DEFAULT_ITALIAN_DATE_TIME_FORMAT));
+        LocalDateTime parsedAfterDate = DateUtils.parseDate(acceptedAfterDateString);
         return parsedAfterDate != null && parsedDate.isAfter(parsedAfterDate);
     }
 
-    private LocalDateTime parseDate(String dateToParse, DateTimeFormatter parseFormat) {
-        try {
-            return LocalDateTime.parse(dateToParse, parseFormat);
-        } catch (DateTimeParseException ex) {
-            return null;
-        }
-    }
 }

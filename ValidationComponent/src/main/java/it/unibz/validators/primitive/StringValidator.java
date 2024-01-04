@@ -3,7 +3,7 @@ package it.unibz.validators.primitive;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibz.utils.StringUtils;
+import it.unibz.utils.DateUtils;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.violation.ViolationMessage;
 
@@ -28,9 +28,8 @@ public class StringValidator extends AbstractValidator<String> {
 
         String stringValue = inputValue.textValue();
 
-        // FIXME solve the changing pattern problem
-        //  set DEFAULT pattern somehow
-        if (StringUtils.isDateTime(stringValue, "yyyy-MM-dd HH:mm:ss")) {
+        // If the input is parsed as date, string validator must not validate it
+        if (DateUtils.parseDate(stringValue) != null) {
             return null;
         }
 

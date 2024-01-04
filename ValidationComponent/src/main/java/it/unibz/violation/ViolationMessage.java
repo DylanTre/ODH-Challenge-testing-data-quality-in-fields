@@ -11,8 +11,7 @@ public class ViolationMessage {
     public static final String RULE_ODD_VIOLATION = "Number %s is not odd";
     public static final String RULE_VALUE_MATCH_VIOLATION = "Field %s value does not match value: %s";
     public static final String RULE_ENUM_MATCH_VIOLATION = "%s is none of the possible options";
-    public static final String RULE_FORMAT_VIOLATION = "Date %s format invalid. Must be %s";
-    public static final String RULE_DAY_OF_WEEK_VIOLATION = "Date %s day of week invalid. Must be %s";
+    public static final String RULE_DAY_OF_WEEK_VIOLATION = "Date %s day of week is %s. Must be %s";
     public static final String RULE_IS_BEFORE_VIOLATION = "Date %s is not before date %s";
     public static final String RULE_IS_AFTER_VIOLATION = "Date %s is not after date %s";
     public static final String RULE_EXPECTED_VIOLATION = "%s was expected to be %s";

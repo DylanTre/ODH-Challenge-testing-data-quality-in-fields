@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import it.unibz.enums.ValidatorType;
 import it.unibz.validators.AbstractValidator;
 
 import java.util.Iterator;
@@ -48,23 +47,22 @@ public class DataValidator {
 //                }
                 }
 
-                applyValidator(fieldName, fieldValue, violations);
+                applyValidators(fieldName, fieldValue, violations);
             }
         } else {
-            applyValidator(null, dataToValidate, violations);
+            applyValidators(null, dataToValidate, violations);
         }
 
         return violations;
     }
 
-    private void applyValidator(String fieldName, JsonNode fieldValue, ObjectNode violations) {
-        AbstractValidator validator = validators.get(ValidatorType.of(fieldValue.getNodeType()));
-
-        if (validator != null) {
+    private void applyValidators(String fieldName, JsonNode fieldValue, ObjectNode violations) {
+        validators.forEach((s, validator) -> {
             ObjectNode validationResult = validator.validate(fieldName, fieldValue);
             violations.setAll(validationResult == null || validationResult.isEmpty()
                     ? objectMapper.createObjectNode()
                     : validationResult);
-        }
+
+        });
     }
 }

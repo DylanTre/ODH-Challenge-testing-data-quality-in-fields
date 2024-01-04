@@ -44,6 +44,11 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
     protected void applySingleRule(String key, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
         switch (ruleName) {
             case "key_match" -> {}
+
+            case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
+                    ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
+                    key, ruleValue.textValue());
+
             case "contains" -> checkForViolation(isListContainsValues(inputValue, ruleValue),
                     ViolationMessage.RULE_ARRAY_CONTAINS_VIOLATION,
                     key, ruleValue);
