@@ -9,11 +9,9 @@ import it.unibz.validators.AbstractValidator;
 import java.util.Iterator;
 import java.util.Map;
 
-// FIXME Maybe it's just one big ObjectValidator?
 public class DataValidator {
     private final Map<String, AbstractValidator> validators;
     private final ObjectMapper objectMapper;
-    private final boolean enableStrToPrimitive = false;
 
     public DataValidator(Map<String, AbstractValidator> validators){
         this.validators = validators;
@@ -35,18 +33,6 @@ public class DataValidator {
             while (fieldNames.hasNext()) {
                 String fieldName = fieldNames.next();
                 JsonNode fieldValue = objectNode.get(fieldName);
-
-                if (enableStrToPrimitive && JsonNodeType.STRING == fieldValue.getNodeType()) {
-                    String entryStringValue = fieldValue.toString();
-
-//                if (StringUtils.isBoolean(entryStringValue)){
-//                    fieldValue = StringUtils.getBooleanFromString(entryStringValue);
-//                }
-//                if (StringUtils.isNumber(entryStringValue)){
-//                    fieldValue = StringUtils.getNumberFromString(entryStringValue);
-//                }
-                }
-
                 applyValidators(fieldName, fieldValue, violations);
             }
         } else {
@@ -57,7 +43,7 @@ public class DataValidator {
     }
 
     private void applyValidators(String fieldName, JsonNode fieldValue, ObjectNode violations) {
-        validators.forEach((s, validator) -> {
+        validators.forEach((validatorKey, validator) -> {
             ObjectNode validationResult = validator.validate(fieldName, fieldValue);
             violations.setAll(validationResult == null || validationResult.isEmpty()
                     ? objectMapper.createObjectNode()

@@ -134,7 +134,6 @@ It is also possible to provided multiple rules for `boolean` input.
 
 ## Date Rules
 
-[//]: # (conform to [ISO 8601]&#40;https://en.wikipedia.org/wiki/ISO_8601&#41; format without an offset `yyyy-MM-ddThh:mm:ss`)
 To be validated, date must conform to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) without offsets or to one of the following formats
 ```
 yyyy-MM-dd HH:mm:ss

@@ -37,7 +37,6 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
         /*
          * Boolean variable should not have more than 1 rule, otherwise it is a list of boolean variables
          */
-
         boolean constrainBooleanValue = ruleValue.booleanValue();
 
         switch (ruleName) {
