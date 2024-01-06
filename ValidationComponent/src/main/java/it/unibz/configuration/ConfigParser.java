@@ -1,73 +1,94 @@
 package it.unibz.configuration;
 
-import it.unibz.validators.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import it.unibz.JsonParser;
+import it.unibz.enums.ValidatorType;
+import it.unibz.validators.AbstractValidator;
+import it.unibz.validators.ArrayValidator;
+import it.unibz.validators.ObjectValidator;
+import it.unibz.validators.primitive.BooleanValidator;
+import it.unibz.validators.primitive.DateValidator;
+import it.unibz.validators.primitive.NumberValidator;
+import it.unibz.validators.primitive.StringValidator;
 import lombok.Getter;
 import lombok.Setter;
-import org.yaml.snakeyaml.Yaml;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class for parsing configuration data.
+ */
+@Slf4j
+@Getter
 public class ConfigParser {
-    public static final String RULE_CONFIG_YML = "rule-config.yml";
-    public static final String GENERIC_VALIDATORS_KEY = "generic_rules";
+    private final Map<String, AbstractValidator> validators;
 
-    @Getter
     @Setter
-    private Map<String, Map<String, Object>> validationRules;
+    private JsonNode validationRules;
 
-    public void loadRules(String filename) throws FileNotFoundException {
-        var yaml = new Yaml();
-        var inputStream = new FileInputStream(filename);
-
-        this.validationRules = yaml.load(inputStream);
+    public ConfigParser() {
+        this.validators = new HashMap<>();
     }
 
-    public Map<String, Object> getRulesForSingleInputDataByKey(String inputDataKey) {
-        return validationRules.get(inputDataKey);
-    }
-
-    public List<AbstractValidator> getGenericValidators(){
-        return getValidatorsFromMap(validationRules);
-    }
-
-    public List<AbstractValidator> getValidatorsFromMap(Map<String, Map<String, Object>> map){
-        List<AbstractValidator> validators = new ArrayList<>();
-        //FIXME By contruction ob is size=1 this can be improved, to decide if changing the config structure or the code
-        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()){
-            validators.add(buildValidator(entry.getKey(), entry.getValue()));
-        }
-        return validators;
-    }
-
-    public List<AbstractValidator> getValidatorsFromList(List<Map<String, Object>> list){
-        List<AbstractValidator> validators = new ArrayList<>();
-        for (Map<String, Object> l : list){
-            for (Map.Entry<String, Object> entry : l.entrySet()){
-                validators.add(buildValidator(entry.getKey(), (Map<String, Object>) entry.getValue()));
-            }
-        }
-        return validators;
-    }
-
-    public  AbstractValidator buildValidator(String key, Map<String, Object> content){
-        if("number".equals(key)){
-            return new NumberValidator(content);
-        } else if("string".equals(key)){
-            return new StringValidator(content);
-        } else if("boolean".equals(key)){
-            return new BooleanValidator(content);
-        } else if("date".equals(key)){
-            return new DateValidator(content);
-        } else if ("object".equals(key)){
-            return new ObjectValidator(content);
-        } else if ("list".equals(key)){
-            return new ListValidator(content);
+    /**
+     * Loads validation rules from a specified file and returns them as a JsonNode.
+     * <p>
+     * Parses the content of the specified file using a JSON parser and returns
+     * the resulting JsonNode representing the validation rules.
+     *
+     * @param filename The name of the file containing the validation rules.
+     * @return A JsonNode representing the loaded validation rules.
+     */
+    public JsonNode loadValidationRules(String filename) {
+        try {
+            return JsonParser.parseData(filename);
+        } catch (IOException ex) {
+            log.error("Could not load validation rules: {}", ex.getMessage());
         }
         return null;
     }
 
+    /**
+     * Retrieves generic validators from the provided JSON node and returns them as a map.
+     *
+     * @param validationRules The JSON node containing validation rules for different validator types.
+     * @return A map of validator keys to their corresponding AbstractValidator instances.
+     * @throws IllegalArgumentException If a ValidatorType is encountered without a corresponding resolver.
+     */
+    public Map<String, AbstractValidator> getGenericValidators(JsonNode validationRules){
+        for (ValidatorType validatorType : ValidatorType.values()) {
+            String key = validatorType.getValidatorKey();
+            if (validationRules.get(key) != null) {
+                /*
+                 * For each validator, assignValidation rules based on type (key)
+                 */
+                validators.put(key, resolveValidator(validatorType, validationRules.get(key)));
+            }
+        }
+
+        return validators;
+    }
+
+    /**
+     * Resolves and returns the appropriate AbstractValidator based on the provided ValidatorType
+     * and its corresponding validation rules.
+     *
+     * @param validatorType The type of validator to be resolved.
+     * @param validationRules The JSON node containing validation rules for the specified validator type.
+     * @return An instance of AbstractValidator corresponding to the provided validator type.
+     * @throws IllegalArgumentException If a ValidatorType is encountered without a corresponding resolver.
+     */
+    private AbstractValidator resolveValidator(ValidatorType validatorType, JsonNode validationRules) {
+        return switch (validatorType) {
+            case NUMBER -> new NumberValidator(validationRules);
+            case STRING -> new StringValidator(validationRules);
+            case BOOLEAN -> new BooleanValidator(validationRules);
+            case DATE -> new DateValidator(validationRules);
+            case OBJECT -> new ObjectValidator(validationRules);
+            case ARRAY -> new ArrayValidator(validationRules);
+        };
+    }
 }

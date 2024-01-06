@@ -5,7 +5,11 @@
   "numb": 3034,
   "date": "2022-11-19 12:00:00",
   "bool": true,
-  "list": [1,2,"3"],
+  "array": [1, 2, "VAX", {
+    "object": {
+      "a": "test"
+    }
+  }],
   "object": {
     "a": "test",
     "numb": 22

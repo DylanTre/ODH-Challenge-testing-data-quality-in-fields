@@ -1,0 +1,54 @@
+{
+  "number": [
+    {
+      "key_match": "num.*",
+      "min": 10,
+      "even": true
+    },
+    {
+      "max": 500
+    }
+  ],
+  "string": {
+    "key_match": ".*",
+    "value_match": ".*t"
+  },
+  "date": {
+    "key_match": "date",
+    "day_of_week": "monday"
+  },
+  "boolean": {
+    "key_match": "bool",
+    "expected": false
+  },
+  "array": {
+    "key_match": "array",
+    "contains": "VAX",
+    "string": {
+      "value_match": 3
+    },
+    "number": {
+      "max": 10
+    }
+  },
+  "object": {
+    "key_match": "nestedObject",
+    "validators": {
+      "string": {
+        "key_match": "mama.*",
+        "value_match": ".*t"
+      },
+      "object": {
+        "key_match": "object",
+        "validators": [
+          {
+            "string": {
+              "key_match": "ra.*",
+              "value_match": ".*t"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

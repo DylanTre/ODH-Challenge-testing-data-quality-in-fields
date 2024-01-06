@@ -1,0 +1,38 @@
+{
+  "number": {
+    "key_match": "magical_number",
+    "more_than": -10,
+    "even": true
+  },
+  "date": {
+    "key_match": "date.*",
+    "format": "dd/MM/yyyy HH:mm:ss",
+    "day_of_week": "monday",
+    "before": "27/11/2023",
+    "after": "11/11/2023"
+  },
+  "boolean": {
+    "key_match": "bool",
+    "expected": true
+  },
+  "object": {
+    "key_match": "nestedObject",
+    "validators": {
+      "string": {
+        "key_match": "mama.*",
+        "value_match": ".*t"
+      },
+      "object": {
+        "key_match": "object",
+        "validators": [
+          {
+            "string": {
+              "key_match": "ra.*",
+              "value_match": ".*t"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

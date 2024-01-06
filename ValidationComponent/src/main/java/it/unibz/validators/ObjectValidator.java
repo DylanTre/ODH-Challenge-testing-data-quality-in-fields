@@ -1,42 +1,74 @@
 package it.unibz.validators;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.DataValidator;
 import it.unibz.configuration.ConfigParser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+/**
+ * Validator for object type.
+ * <p>
+ * Contains other primitive validators inside
+ * <p>
+ * Extends {@code AbstractValidator<JsonNode>} and provides specific validation
+ * logic for object type.
+ */
+public class ObjectValidator extends AbstractValidator<JsonNode> {
 
-public class ObjectValidator extends AbstractValidator {
+    private static final String OBJECT_VALIDATOR_KEY = "object";
 
-    List<AbstractValidator> validators = new ArrayList<>();
+    private final DataValidator dataValidator;
+    private final ObjectNode objectViolations;
 
-    public ObjectValidator(final Map<String, Object> rules)
-    {
-        super(rules);
-        ConfigParser configParser = new ConfigParser();
-        this.validators = configParser.getValidatorsFromList((List<Map<String, Object>>) rules.get("validators"));
+    public ObjectValidator(JsonNode validationRules) {
+        super(validationRules);
+
+        ConfigParser config = new ConfigParser();
+        this.dataValidator = new DataValidator(config.getGenericValidators(getObjectRules()));
+        this.objectViolations = getObjectMapper().createObjectNode();
     }
 
     @Override
-    public boolean validate(final String key, Object inputValue) {
-        boolean out = true;
-        if (keyMatch(key)){
-            if (inputValue instanceof Map){
-                for (Map.Entry<String, Object> entry : ((Map<String, Object>) inputValue).entrySet())
-                {
-                    boolean innerMatch = false;
-                    for (AbstractValidator validator : validators)
-                    {
-                        innerMatch = innerMatch || validator.validate(entry.getKey(), entry.getValue());
-                    }
-                    if (!innerMatch) {
-                        out = false;
-                        break;
-                    }
-                }
-            }
-            return out;
+    public ObjectNode validate(String key, JsonNode inputValue) {
+        if (JsonNodeType.OBJECT != inputValue.getNodeType()) {
+            return null;
         }
-        return false;
+
+        if (keyMatch(validationRules, key)) {
+            objectViolations.putIfAbsent(getValidatorKey(), dataValidator.validateAll(inputValue));
+        }
+
+        return objectViolations;
     }
+
+    @Override
+    protected void applySpecificValidationRule(String key, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
+        /*
+         * Object specific rules
+         */
+    }
+
+    @Override
+    public String getValidatorKey() {
+        return OBJECT_VALIDATOR_KEY;
+    }
+
+    /**
+     * Retrieves the JsonNode representing the object rules from the validationRules.
+     * <p>
+     * This method checks if the validationRules has a "validators" property. If present,
+     * it returns the JsonNode associated with "validators"; otherwise, it returns the entire
+     * validationRules JsonNode.
+     *
+     * @return The JsonNode representing the object rules from the validationRules.
+     */
+    private JsonNode getObjectRules() {
+        if (validationRules.has("validators")) {
+            return validationRules.get("validators");
+        } else {
+            return validationRules;
+        }
+    }
+
 }
