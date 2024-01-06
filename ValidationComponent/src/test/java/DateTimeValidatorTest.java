@@ -1,5 +1,5 @@
 import it.unibz.configuration.ConfigParser;
-import it.unibz.validators.primitive.DateValidator;
+import it.unibz.validators.primitive.DatetimeValidator;
 import org.junit.Before;
 
 import java.io.FileNotFoundException;
@@ -7,7 +7,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 
-public class DateValidatorTest {
+public class DateTimeValidatorTest {
 
     public static final String DATE_KEY = "date";
     public static final String FIXED_INSTANT = "2023-11-20T12:00:00Z";
@@ -16,7 +16,7 @@ public class DateValidatorTest {
     public static final String TEST_RULE_CONFIG_YML = "test-rule-config.yml";
 
     private Clock clock;
-    private DateValidator dateValidator;
+    private DatetimeValidator dateTimeValidator;
 
     @Before
     public void setUp() throws FileNotFoundException {

@@ -23,7 +23,7 @@
   },
   "array": {
     "key_match": "array",
-    "contains": "VAX",
+    "contains": [10, 20],
     "string": {
       "value_match": 3
     },

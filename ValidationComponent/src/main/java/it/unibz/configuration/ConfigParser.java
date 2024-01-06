@@ -7,12 +7,11 @@ import it.unibz.validators.AbstractValidator;
 import it.unibz.validators.ArrayValidator;
 import it.unibz.validators.ObjectValidator;
 import it.unibz.validators.primitive.BooleanValidator;
-import it.unibz.validators.primitive.DateValidator;
+import it.unibz.validators.primitive.DatetimeValidator;
 import it.unibz.validators.primitive.NumberValidator;
 import it.unibz.validators.primitive.StringValidator;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import java.util.Map;
 /**
  * Utility class for parsing configuration data.
  */
-@Slf4j
 @Getter
 public class ConfigParser {
     private final Map<String, AbstractValidator> validators;
@@ -46,7 +44,7 @@ public class ConfigParser {
         try {
             return JsonParser.parseData(filename);
         } catch (IOException ex) {
-            log.error("Could not load validation rules: {}", ex.getMessage());
+            //
         }
         return null;
     }
@@ -86,7 +84,7 @@ public class ConfigParser {
             case NUMBER -> new NumberValidator(validationRules);
             case STRING -> new StringValidator(validationRules);
             case BOOLEAN -> new BooleanValidator(validationRules);
-            case DATE -> new DateValidator(validationRules);
+            case DATE -> new DatetimeValidator(validationRules);
             case OBJECT -> new ObjectValidator(validationRules);
             case ARRAY -> new ArrayValidator(validationRules);
         };
