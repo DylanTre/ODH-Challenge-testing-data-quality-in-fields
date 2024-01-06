@@ -3,7 +3,7 @@ import it.unibz.configuration.ConfigParser;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.validators.ObjectValidator;
 import it.unibz.validators.primitive.BooleanValidator;
-import it.unibz.validators.primitive.DatetimeValidator;
+import it.unibz.validators.primitive.DateTimeValidator;
 import it.unibz.validators.primitive.NumberValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class ConfigurationTest {
         for (Map.Entry<String, AbstractValidator> validatorEntry : validators.entrySet()) {
             if (validatorEntry.getValue() instanceof NumberValidator)
                 expectedInstances++;
-            if (validatorEntry.getValue() instanceof DatetimeValidator)
+            if (validatorEntry.getValue() instanceof DateTimeValidator)
                 expectedInstances++;
             if (validatorEntry.getValue() instanceof BooleanValidator)
                 expectedInstances++;

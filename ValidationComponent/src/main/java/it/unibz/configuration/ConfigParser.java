@@ -7,7 +7,7 @@ import it.unibz.validators.AbstractValidator;
 import it.unibz.validators.ArrayValidator;
 import it.unibz.validators.ObjectValidator;
 import it.unibz.validators.primitive.BooleanValidator;
-import it.unibz.validators.primitive.DatetimeValidator;
+import it.unibz.validators.primitive.DateTimeValidator;
 import it.unibz.validators.primitive.NumberValidator;
 import it.unibz.validators.primitive.StringValidator;
 import lombok.Getter;
@@ -84,7 +84,7 @@ public class ConfigParser {
             case NUMBER -> new NumberValidator(validationRules);
             case STRING -> new StringValidator(validationRules);
             case BOOLEAN -> new BooleanValidator(validationRules);
-            case DATE -> new DatetimeValidator(validationRules);
+            case DATE -> new DateTimeValidator(validationRules);
             case OBJECT -> new ObjectValidator(validationRules);
             case ARRAY -> new ArrayValidator(validationRules);
         };

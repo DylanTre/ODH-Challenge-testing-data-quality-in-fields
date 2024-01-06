@@ -1,5 +1,5 @@
 import it.unibz.configuration.ConfigParser;
-import it.unibz.validators.primitive.DatetimeValidator;
+import it.unibz.validators.primitive.DateTimeValidator;
 import org.junit.Before;
 
 import java.io.FileNotFoundException;
@@ -16,7 +16,7 @@ public class DateTimeValidatorTest {
     public static final String TEST_RULE_CONFIG_YML = "test-rule-config.yml";
 
     private Clock clock;
-    private DatetimeValidator dateTimeValidator;
+    private DateTimeValidator dateTimeValidator;
 
     @Before
     public void setUp() throws FileNotFoundException {
