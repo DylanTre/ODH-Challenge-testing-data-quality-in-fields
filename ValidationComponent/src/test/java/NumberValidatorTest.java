@@ -1,8 +1,8 @@
 import com.fasterxml.jackson.databind.JsonNode;
-import it.unibz.DataParser;
 import it.unibz.DataValidator;
+import it.unibz.JsonParser;
 import it.unibz.configuration.ConfigParser;
-import it.unibz.configuration.ValidatorConstants;
+import it.unibz.constants.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ public class NumberValidatorTest {
         JsonNode validationRules = config.loadValidationRules(TEST_RULE_CONFIG_YML);
 
 
-        JsonNode dataToValidate = DataParser.parseData(ValidatorConstants.VALIDATION_INPUT_FILENAME);
+        JsonNode dataToValidate = JsonParser.parseData(Configuration.VALIDATION_INPUT_FILENAME);
         DataValidator dataValidator = new DataValidator(config.getGenericValidators(validationRules));
     }
 

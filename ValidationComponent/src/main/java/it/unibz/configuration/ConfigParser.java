@@ -1,7 +1,7 @@
 package it.unibz.configuration;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import it.unibz.DataParser;
+import it.unibz.JsonParser;
 import it.unibz.enums.ValidatorType;
 import it.unibz.validators.AbstractValidator;
 import it.unibz.validators.ArrayValidator;
@@ -12,12 +12,16 @@ import it.unibz.validators.primitive.NumberValidator;
 import it.unibz.validators.primitive.StringValidator;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Utility class for parsing configuration data.
+ */
+@Slf4j
 @Getter
 public class ConfigParser {
     private final Map<String, AbstractValidator> validators;
@@ -29,8 +33,22 @@ public class ConfigParser {
         this.validators = new HashMap<>();
     }
 
-    public JsonNode loadValidationRules(String filename) throws IOException {
-        return DataParser.parseData(filename);
+    /**
+     * Loads validation rules from a specified file and returns them as a JsonNode.
+     * <p>
+     * Parses the content of the specified file using a JSON parser and returns
+     * the resulting JsonNode representing the validation rules.
+     *
+     * @param filename The name of the file containing the validation rules.
+     * @return A JsonNode representing the loaded validation rules.
+     */
+    public JsonNode loadValidationRules(String filename) {
+        try {
+            return JsonParser.parseData(filename);
+        } catch (IOException ex) {
+            log.error("Could not load validation rules: {}", ex.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -71,8 +89,6 @@ public class ConfigParser {
             case DATE -> new DateValidator(validationRules);
             case OBJECT -> new ObjectValidator(validationRules);
             case ARRAY -> new ArrayValidator(validationRules);
-            default -> throw new IllegalArgumentException(String.format("Validator of type %s undefined",
-                    validatorType));
         };
     }
 }

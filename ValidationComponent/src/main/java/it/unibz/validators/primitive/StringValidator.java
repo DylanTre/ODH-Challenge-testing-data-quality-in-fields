@@ -3,10 +3,16 @@ package it.unibz.validators.primitive;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.constants.ViolationMessage;
 import it.unibz.utils.DateUtils;
 import it.unibz.validators.AbstractValidator;
-import it.unibz.violation.ViolationMessage;
 
+/**
+ * Validator for string values.
+ * <p>
+ * Extends {@code AbstractValidator<String>} and provides specific validation
+ * logic for string values.
+ */
 public class StringValidator extends AbstractValidator<String> {
 
     private static final String STRING_VALIDATOR_KEY = "string";
@@ -28,19 +34,21 @@ public class StringValidator extends AbstractValidator<String> {
 
         String stringValue = inputValue.textValue();
 
-        // If the input is parsed as date, string validator must not validate it
+        /*
+         * If the input is parsed as date, string validator must not validate it
+         */
         if (DateUtils.parseDate(stringValue) != null) {
             return null;
         }
 
-        parseJsonObject(key, stringValue, validationRules);
+        applyValidationRule(key, stringValue, validationRules);
 
         stringViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return stringViolations;
     }
 
     @Override
-    public void applySingleRule(String key, String inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySpecificValidationRule(String key, String inputValue, String ruleName, JsonNode ruleValue) {
         String constraintStringValue = null;
 
         /*
@@ -55,14 +63,6 @@ public class StringValidator extends AbstractValidator<String> {
         }
 
         switch (ruleName) {
-            case "key_match" -> {}
-
-            // Example There should be possible to associate naming conventions
-            // (using regular expressions) to validation rules.
-            case "name_pattern" -> checkForViolation(isValueMatch(key, constraintStringValue),
-                        ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
-                        key, constraintStringValue);
-
             case "value_match" -> checkForViolation(isValueMatch(inputValue, constraintStringValue),
                     ViolationMessage.RULE_VALUE_MATCH_VIOLATION,
                     inputValue, constraintStringValue);
@@ -75,17 +75,31 @@ public class StringValidator extends AbstractValidator<String> {
         }
     }
 
+    @Override
+    public String getValidatorKey() {
+        return STRING_VALIDATOR_KEY;
+    }
+
+    /**
+     * Checks if the provided input value is one of the values specified in the "enum" property of the rule.
+     * <p>
+     * This method iterates through the elements of the "enum" property in the ruleValue JsonNode and compares
+     * each element with the inputValue. If a match is found, the method returns true, otherwise false.
+     *
+     * @param inputValue The input value to be checked against the "enum" values.
+     * @param ruleValue  The JsonNode representing the validation rule containing the "enum" property.
+     * @return {@code true} if the inputValue is one of the values specified in the "enum" property, {@code false} otherwise.
+     */
     private boolean isOneOf(String inputValue, JsonNode ruleValue) {
+        if (JsonNodeType.ARRAY != ruleValue.getNodeType()) {
+            return false;
+        }
+
         for (JsonNode enumValue : ruleValue.path("enum")) {
             if (inputValue.equals(enumValue.asText())) {
                 return true;
             }
         }
         return false;
-    }
-
-    @Override
-    public String getValidatorKey() {
-        return STRING_VALIDATOR_KEY;
     }
 }

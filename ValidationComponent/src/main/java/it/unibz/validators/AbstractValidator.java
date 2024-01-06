@@ -5,11 +5,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.constants.ViolationMessage;
 import it.unibz.utils.RegexUtils;
 import lombok.Getter;
 
 import java.util.Iterator;
 
+/**
+ * Base class for implementing validators.
+ * <p>
+ * This abstract class provides a foundation for creating custom validators by defining common
+ * methods and structures. It is parameterized with type {@code T} representing the type of
+ * values to be validated.
+ *
+ * @param <T> The type of values to be validated.
+ */
 public abstract class AbstractValidator<T> {
 
     protected final String KEY_FILTER_VALUE = "key_match";
@@ -41,50 +51,29 @@ public abstract class AbstractValidator<T> {
     }
 
     /**
-     * Recursively parses a JSON object, applying validation rules based on the
+     * Recursively parses a JSON rule object, applying validation rules based on the
      * field names and values within the object.
-     * Assumed that inputValue is of primitive type [string, number, boolean, date]
+     * Assumes that inputValue is of primitive type [string, number, boolean, date]
      *
      * @param inputKey    The key associated with the input value.
      * @param inputValue  The input value to be validated.
      * @param ruleValue   The JSON node representing the validation rules.
      */
-    protected void parseJsonObject(String inputKey, T inputValue, JsonNode ruleValue) {
+    protected void applyValidationRule(String inputKey, T inputValue, JsonNode ruleValue) {
         if (ruleValue == null || ruleValue.isEmpty()) {
             return;
         }
 
+        if (ruleValue.isObject() && ruleValue.has("key_match")) {
+            if (!keyMatch(ruleValue, inputKey)) {
+                return;
+            }
+        }
+
         if (ruleValue.isObject()) {
-            if (ruleValue.has("key_match")) {
-                if (!keyMatch(ruleValue, inputKey)) {
-                    return;
-                }
-            }
-
-            ObjectNode objectNode = (ObjectNode) ruleValue;
-            Iterator<String> fieldNames = objectNode.fieldNames();
-
-            while (fieldNames.hasNext()) {
-                String ruleFieldName = fieldNames.next();
-                JsonNode fieldFieldValue = objectNode.get(ruleFieldName);
-
-                // Recursive validation for nested objects
-                if (fieldFieldValue.isObject()) {
-                    parseJsonObject(inputKey, inputValue, fieldFieldValue);
-                } else if (fieldFieldValue.isArray()) {
-                    for (JsonNode innerNode : fieldFieldValue) {
-                        parseJsonObject(inputKey, inputValue, innerNode);
-                    }
-                }
-
-                // Perform validation based on the field name and value
-                applySingleRule(inputKey, inputValue, ruleFieldName, fieldFieldValue);
-            }
-
+            validateObjectFields(inputKey, inputValue, ruleValue);
         } else if (ruleValue.isArray()) {
-            for (JsonNode innerNode : ruleValue) {
-                parseJsonObject(inputKey, inputValue, innerNode);
-            }
+            validateArrayElements(inputKey, inputValue, ruleValue);
         }
     }
 
@@ -102,6 +91,49 @@ public abstract class AbstractValidator<T> {
     }
 
     /**
+     * Validates fields of an object based on the provided validation rules.
+     * <p>
+     * Iterates through the fields of the object and applies validation rules to each field.
+     *
+     * @param validationKey   The key associated with the validation.
+     * @param validationValue The value to be validated.
+     * @param ruleValue   The validation rules for the object.
+     */
+    private void validateObjectFields(String validationKey, T validationValue, JsonNode ruleValue) {
+        ObjectNode objectNode = (ObjectNode) ruleValue;
+        Iterator<String> fieldNames = objectNode.fieldNames();
+
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            JsonNode fieldValue = objectNode.get(fieldName);
+
+            if (fieldValue.isObject()) {
+                applyValidationRule(validationKey, validationValue, fieldValue);
+            } else if (fieldValue.isArray()) {
+                validateArrayElements(validationKey, validationValue, fieldValue);
+            }
+
+            applyGlobalValidationRule(validationKey, validationValue, fieldName, fieldValue);
+        }
+    }
+
+    /**
+     * Validates elements of an array based on the provided validation rules.
+     * <p>
+     * Iterates through the elements of the array and applies validation rules to each element.
+     *
+     * @param validationKey   The key associated with the validation.
+     * @param validationValue The value to be validated.
+     * @param arrayNode       The validation rules for the array.
+     */
+    private void validateArrayElements(String validationKey, T validationValue, JsonNode arrayNode) {
+        for (JsonNode innerNode : arrayNode) {
+            applyValidationRule(validationKey, validationValue, innerNode);
+        }
+    }
+
+
+    /**
      * Checks if the input value matches a given regular expression pattern.
      *
      * @param inputValue             The input value to be checked.
@@ -110,6 +142,34 @@ public abstract class AbstractValidator<T> {
      */
     protected boolean isValueMatch(String inputValue, String constraintStringValue) {
         return RegexUtils.regexMatch(constraintStringValue, inputValue);
+    }
+
+    /**
+     * Applies a global validation rule to the provided input value based on the ruleName.
+     * <p>
+     * This method handles global validation rules recognized by every validator.
+     * If rule is not global, it is specific and is applied in a child
+     *
+     * @param key        The key associated with the input value being validated.
+     * @param inputValue The input value to be validated.
+     * @param ruleName   The name of the global validation rule.
+     * @param ruleValue  The JsonNode representing the value associated with the validation rule.
+     */
+    protected void applyGlobalValidationRule(String key, T inputValue, String ruleName, JsonNode ruleValue) {
+        switch (ruleName) {
+            case "key_match" -> {}
+
+            /*
+             * Example for
+             * There should be possible to associate naming conventions
+             * (using regular expressions) to validation rules.
+             */
+            case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
+                    ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
+                    key, ruleValue.textValue());
+
+            default -> applySpecificValidationRule(key, inputValue, ruleName, ruleValue);
+        }
     }
 
     /**
@@ -123,7 +183,7 @@ public abstract class AbstractValidator<T> {
     public abstract ObjectNode validate(String key, JsonNode inputValue);
 
     /**
-     * Applies a single validation rule to the input value based on the rule name and value.
+     * Applies a specific validation rule to the input value based on the rule name and value.
      * This method is called during the validation process.
      *
      * @param key        The key associated with the input value.
@@ -131,7 +191,7 @@ public abstract class AbstractValidator<T> {
      * @param ruleName   The name of the validation rule.
      * @param ruleValue  The JSON node representing the value of the validation rule.
      */
-    protected abstract void applySingleRule(String key, T inputValue, String ruleName, JsonNode ruleValue);
+    protected abstract void applySpecificValidationRule(String key, T inputValue, String ruleName, JsonNode ruleValue);
 
     /**
      * Gets the key associated with the validator. This key is used to identify

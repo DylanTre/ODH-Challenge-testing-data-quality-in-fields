@@ -3,9 +3,15 @@ package it.unibz.validators.primitive;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import it.unibz.constants.ViolationMessage;
 import it.unibz.validators.AbstractValidator;
-import it.unibz.violation.ViolationMessage;
 
+/**
+ * Validator for number values.
+ * <p>
+ * Extends {@code AbstractValidator<Number>} and provides specific validation
+ * logic for number values.
+ */
 public class NumberValidator extends AbstractValidator<Number> {
 
     private static final String NUMBER_VALIDATOR_KEY = "number";
@@ -26,27 +32,23 @@ public class NumberValidator extends AbstractValidator<Number> {
         }
 
         Number numericValue = inputValue.numberValue();
-        parseJsonObject(key, numericValue, validationRules);
+        applyValidationRule(key, numericValue, validationRules);
 
         numberViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return numberViolations;
     }
 
     @Override
-    public void applySingleRule(String key, Number inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySpecificValidationRule(String key, Number inputValue, String ruleName, JsonNode ruleValue) {
         Number constrainNumberValue = null;
-        // enum rule can contain list of strings to match
+        /*
+         * enum rule can contain list of strings to match
+         */
         if (ruleValue.isNumber()) {
             constrainNumberValue = ruleValue.numberValue();
         }
 
         switch (ruleName) {
-            case "key_match" -> {}
-
-            case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
-                    ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
-                    key, ruleValue.textValue());
-
             case "min" -> checkForViolation(isMoreThan(inputValue, constrainNumberValue),
                     ViolationMessage.RULE_MORE_THAN_VIOLATION,
                     inputValue, constrainNumberValue);
@@ -63,9 +65,13 @@ public class NumberValidator extends AbstractValidator<Number> {
                     ViolationMessage.RULE_EVEN_VIOLATION,
                     inputValue);
 
-            case "odd" -> checkForViolation(!isEven(inputValue),
+            case "odd" -> checkForViolation(isOdd(inputValue),
                     ViolationMessage.RULE_ODD_VIOLATION,
                     inputValue);
+
+            case "enum" -> checkForViolation(isOneOf(inputValue, ruleValue),
+                    ViolationMessage.RULE_ENUM_MATCH_VIOLATION,
+                    inputValue, ruleValue);
 
             default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }
@@ -76,28 +82,99 @@ public class NumberValidator extends AbstractValidator<Number> {
         return NUMBER_VALIDATOR_KEY;
     }
 
-    private <T extends Number> boolean isMoreThan(T number, Number numberToCompare) {
-        return number != null && number.doubleValue() - numberToCompare.doubleValue() > 0;
-    }
-
-    private <T extends Number> boolean isEqual(T number, Number numberToCompare) {
-        return number != null
-                && Math.abs(number.doubleValue() - numberToCompare.doubleValue()) < TOLERATED_FLOATING_POINT_EQUALITY_DIFFERENCE;
-    }
-
-    /*
-     * This method serves both even and odd number cases
+    /**
+     * Checks if the given number is greater than another number.
+     * <p>
+     * This method compares two numbers using their double values.
+     * If the provided comparison number is null or the input number is NaN or infinite, the result is false.
+     *
+     * @param number           The number to be compared.
+     * @param numberToCompare  The number to compare against.
+     * @param <T>              The type of the numbers.
+     * @return {@code true} if the provided number is greater than the comparison number, {@code false} otherwise.
      */
-    private  boolean isEven(Number number) {
-        // FIXME how to deal with double throw immediate exception or just return false?
-        if (number instanceof Double) {
+    private <T extends Number> boolean isMoreThan(T number, Number numberToCompare) {
+        if (numberToCompare == null || isNaNOrInfinite(number.doubleValue())) {
             return false;
         }
-        return number != null && number.longValue() % 2 == 0;
+        return number.doubleValue() > numberToCompare.doubleValue();
     }
 
+    /**
+     * Checks if the given number is approximately equal to another number within a tolerated floating-point difference.
+     * <p>
+     * This method compares two numbers using their double values.
+     * If the provided comparison number is null or the input number is NaN or infinite, the result is false.
+     *
+     * @param number           The number to be compared.
+     * @param numberToCompare  The number to compare against.
+     * @param <T>              The type of the numbers.
+     * @return {@code true} if the absolute difference between the provided number and the comparison number is within
+     * the tolerated floating-point difference, {@code false} otherwise.
+     */
+    private <T extends Number> boolean isEqual(T number, Number numberToCompare) {
+        if (numberToCompare == null || isNaNOrInfinite(number.doubleValue())) {
+            return false;
+        }
+        return Math.abs(number.doubleValue() - numberToCompare.doubleValue()) < TOLERATED_FLOATING_POINT_EQUALITY_DIFFERENCE;
+    }
+
+    /**
+     * Checks if the given number is even.
+     * <p>
+     * This method returns false if the number is an instance of Double.
+     *
+     * @param number The number to be checked.
+     * @return {@code true} if the provided number is not an instance of Double and is even, {@code false} otherwise.
+     */
+    private boolean isEven(Number number) {
+        return !(number instanceof Double) && number != null && number.longValue() % 2 == 0;
+    }
+
+    /**
+     * Checks if the given number is odd.
+     * <p>
+     * This method returns false if the number is an instance of Double.
+     *
+     * @param number The number to be checked.
+     * @return {@code true} if the provided number is not an instance of Double and is odd, {@code false} otherwise.
+     */
+    private boolean isOdd(Number number) {
+        return !(number instanceof Double) && number != null && number.longValue() % 2 == 1;
+    }
+
+    /**
+     * Checks if the provided double value is NaN or infinite.
+     *
+     * @param number The double value to check.
+     * @return {@code true} if the value is not null and is NaN or infinite, {@code false} otherwise.
+     */
     private boolean isNaNOrInfinite(Double number) {
         return number != null && (Double.isNaN(number) || Double.isInfinite(number));
     }
+
+    /**
+     * Checks if the given number is one of the numbers specified in the "enum" property of the rule.
+     * <p>
+     * This method iterates through the elements of the "enum" property in the ruleValue JsonNode and compares
+     * each element with the input number. If a match is found, the method returns true, otherwise false.
+     *
+     * @param inputValue The input number to be checked against the "enum" values.
+     * @param ruleValue  The JsonNode representing the validation rule containing the "enum" property.
+     * @return {@code true} if the input number is one of the values specified in the "enum" property, {@code false} otherwise.
+     */
+    private boolean isOneOf(Number inputValue, JsonNode ruleValue) {
+        if (JsonNodeType.ARRAY != ruleValue.getNodeType()) {
+            return false;
+        }
+
+        for (JsonNode enumValue : ruleValue.path("enum")) {
+            if (inputValue.equals(enumValue.numberValue())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

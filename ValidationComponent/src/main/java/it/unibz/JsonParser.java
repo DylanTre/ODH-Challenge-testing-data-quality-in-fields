@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 
-public class DataParser {
+/**
+ * Class responsible for parsing JSON-like data
+ */
+public class JsonParser {
 
     /**
      * Parses JSON data from a file and returns the corresponding JsonNode.

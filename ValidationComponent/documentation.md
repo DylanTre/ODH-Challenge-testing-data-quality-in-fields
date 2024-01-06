@@ -1,3 +1,19 @@
+# Validation
+
+Validation rule configuration must be stored in: `rule-config.json`
+
+Validation input must be stored in: `validation-data.json`
+
+To start the validation:
+
+```cmd
+javac MyClass.java
+java MyClass filename
+```
+
+Validation output is stored: `validation-results.json`
+
+
 # Rule Structure
 
 The rule structure defines validation rules for different data types within a JSON object. Each data type has its set of rules, and the structure is hierarchical.
@@ -24,7 +40,7 @@ Currently, 6 different validators are recognized:
 `Number`, `String`, `Boolean`, `Date`
 
 2 abstract
-`List`, `Object` which contain other (both primitive and abstract) validators inside.
+`Array`, `Object` which contain other (both primitive and abstract) validators inside.
 
 When specifying rules for specific type input, validator type **must** be the key.
 The following describes recognized validation rules by validator type
@@ -37,6 +53,8 @@ The following describes recognized validation rules by validator type
 - `even:boolean`: Validates if the numeric value is even. For floating point numbers, it is `false` [adjust]
 - `odd:boolean`: Validates if the numeric value is odd. For floating point numbers, it is `false` [adjust]
 - `between: {min:number, max:number}`: Validates if the numeric value is between the two provided values. [Not yet implemented]
+- `enum:array_number`: Validates if the number value matches one of the provided in the array
+
 
 Single rule example:
 ```json
@@ -80,7 +98,7 @@ Example:
 ## String Rules
 
 - `value_match:string_regex`: Validates if the string value matches the provided regex
-- `enum:list_string`: Validates if the string value matches one of provided ones in the list
+- `enum:array_string`: Validates if the string value matches one of the provided in the array
 
 Similar to `Number` rules, single rule example:
 ```json

@@ -3,9 +3,14 @@ package it.unibz.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class for comparing {@code String} values using a regular expression
+ */
 public class RegexUtils {
 
-    //preventing people to waste memory
+    /*
+     * preventing memory waste
+     */
     private RegexUtils(){}
 
     /**

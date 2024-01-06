@@ -4,12 +4,8 @@
   "date" : [ "Date 2022-11-19T12:00 day of week is SATURDAY. Must be MONDAY" ],
   "boolean" : [ "bool was expected to be false" ],
   "array" : {
-    "number" : {
-      "number" : [ ]
-    },
-    "string" : {
-      "string" : [ "Field VAX value does not match value: 3" ]
-    }
+    "number" : [ ],
+    "string" : [ "Field VAX value does not match value: 3" ]
   },
   "object" : {
     "string" : [ ],

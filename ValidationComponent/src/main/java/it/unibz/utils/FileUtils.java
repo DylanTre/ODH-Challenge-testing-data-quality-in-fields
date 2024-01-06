@@ -9,9 +9,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Utility class for file-related operations.
+ */
 public class FileUtils {
 
+    /**
+     * Success message template for file write operations.
+     */
     private static final String FILE_WRITE_SUCCESS = "Validation results written to the file: %s";
+
+    /**
+     * Error message template for file write operations.
+     */
     private static final String FILE_WRITE_ERROR = "Error writing to the file: %s";
 
     private FileUtils() {}

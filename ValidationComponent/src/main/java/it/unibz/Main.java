@@ -2,11 +2,13 @@ package it.unibz;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import it.unibz.configuration.ConfigParser;
-import it.unibz.configuration.ValidatorConstants;
+import it.unibz.constants.Configuration;
 import it.unibz.utils.FileUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
+@Slf4j
 public class Main {
     public static void main(String[] args) {
 
@@ -18,16 +20,18 @@ public class Main {
         ConfigParser config = new ConfigParser();
         JsonNode validationRules;
 
-        try {
-            validationRules = config.loadValidationRules(ValidatorConstants.RULE_CONFIGURATION_FILENAME);
+        validationRules = config.loadValidationRules(Configuration.RULE_CONFIGURATION_FILENAME);
 
-            JsonNode dataToValidate = DataParser.parseData(ValidatorConstants.VALIDATION_INPUT_FILENAME);
+        JsonNode dataToValidate;
+        try {
+            dataToValidate = JsonParser.parseData(Configuration.VALIDATION_INPUT_FILENAME);
+
             DataValidator dataValidator = new DataValidator(config.getGenericValidators(validationRules));
 
-            FileUtils.writeToFile(ValidatorConstants.VALIDATION_OUTPUT_FILENAME,
+            FileUtils.writeToFile(Configuration.VALIDATION_OUTPUT_FILENAME,
                     dataValidator.validateAll(dataToValidate));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            log.error("Parse error occurred: {}", ex.getMessage());
         }
     }
 }
