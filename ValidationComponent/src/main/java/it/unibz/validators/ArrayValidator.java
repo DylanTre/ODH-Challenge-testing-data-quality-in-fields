@@ -1,6 +1,7 @@
 package it.unibz.validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.DataValidator;
@@ -41,22 +42,28 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
             arrayValuesViolations = validateArrayValues(inputValue);
         }
 
-        arrayViolations.putIfAbsent(getValidatorKey(), arrayValuesViolations);
+        applyValidationRule(key, inputValue, validationRules);
+
+        violationMessages.add(arrayValuesViolations);
+        arrayViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return arrayViolations;
     }
 
     @Override
     protected void applySpecificValidationRule(String key, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
         switch (ruleName) {
-            case "contains" -> checkForViolation(arrayContainsValues(inputValue, ruleValue),
-                    ViolationMessage.RULE_ARRAY_CONTAINS_VIOLATION,
-                    key, ruleValue);
+            case "contains" -> {
+                ArrayNode missingValues = arrayContainsValues(inputValue, ruleValue);
+                checkForViolation(missingValues.isEmpty(),
+                        ViolationMessage.RULE_ARRAY_CONTAINS_VIOLATION,
+                        key, missingValues.toString());
+            }
 
             case "type" -> checkForViolation(isCorrectType(inputValue, ruleValue),
                     ViolationMessage.RULE_ARRAY_CORRECT_TYPE_VIOLATION,
-                    key, ruleValue);
+                    key, ruleValue.textValue());
 
-            default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
+            default -> {}
         }
     }
 
@@ -73,22 +80,16 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
      *
      * @param inputArray  The JsonNode representing the input array.
      * @param ruleValue  The JsonNode representing the array of values to check against.
-     * @return {@code true} if the input array contains all values specified in the ruleValue array, otherwise {@code false}.
+     * @return {@code ArrayNode} empty if the array contains all values, missing values otherwise
      */
-    private boolean arrayContainsValues(JsonNode inputArray, JsonNode ruleValue) {
+    private ArrayNode arrayContainsValues(JsonNode inputArray, JsonNode ruleValue) {
+        ArrayNode missingIndexes = objectMapper.createArrayNode();
         for (JsonNode targetValue : ruleValue) {
-            boolean containsValue = false;
-            for (JsonNode node : inputArray) {
-                if (node.toString().equals(targetValue.toString())) {
-                    containsValue = true;
-                    break;
-                }
-            }
-            if (!containsValue) {
-                return false;
+            if (!arrayContainsValue(inputArray, targetValue)) {
+                missingIndexes.add(targetValue);
             }
         }
-        return true;
+        return missingIndexes;
     }
 
 
@@ -140,4 +141,21 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
 
         return violations;
     }
+
+    /**
+     * Checks if the given JsonNode array contains a specific value.
+     *
+     * @param array        The JsonNode array to be checked.
+     * @param valueToCheck The value to be checked in the array.
+     * @return {@code true} if the value is found in the array, {@code false} otherwise.
+     */
+    private boolean arrayContainsValue(JsonNode array, JsonNode valueToCheck) {
+        for (JsonNode arrayValue : array) {
+            if (arrayValue.equals(valueToCheck)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

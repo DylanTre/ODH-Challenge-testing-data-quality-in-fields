@@ -17,13 +17,13 @@ import java.time.LocalDateTime;
  * Extends {@code AbstractValidator<LocalDateTime>} and provides specific validation
  * logic for local date time values.
  */
-public class DateValidator extends AbstractValidator<LocalDateTime> {
+public class DateTimeValidator extends AbstractValidator<LocalDateTime> {
 
     private static final String DATE_VALIDATOR_KEY = "date";
 
     private final ObjectNode dateViolations;
 
-    public DateValidator(JsonNode validationRules) {
+    public DateTimeValidator(JsonNode validationRules) {
         super(validationRules);
 
         this.dateViolations = getObjectMapper().createObjectNode();

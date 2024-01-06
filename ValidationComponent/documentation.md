@@ -37,7 +37,7 @@ Example:
 Currently, 6 different validators are recognized:
 
 4 primitive 
-`Number`, `String`, `Boolean`, `Date`
+`Number`, `String`, `Boolean`, `DateTime`
 
 2 abstract
 `Array`, `Object` which contain other (both primitive and abstract) validators inside.
@@ -150,19 +150,18 @@ It is also possible to provided multiple rules for `boolean` input.
 ]
 ```
 
-## Date Rules
+## Datetime Rules
 
-To be validated, date must conform to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) without offsets or to one of the following formats
+To be validated, datetime must conform to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) without offsets or to one of the following formats
 ```
 yyyy-MM-dd HH:mm:ss
 dd/MM/yyyy HH:mm:ss
 dd.MM.yyyy HH:mm:ss
 ```
 
-
-- `day_of_week:string`: Validates if the string date day of week equals the provided one. The provided date **must** match one of days of the week (independent of the case)
-- `before:string`: Validates if the string date is before the provided one
-- `after:string`: Validates if the string date is after the provided one
+- `day_of_week:string`: Validates if the string datetime day of week equals the provided one. The provided datetime**must** match one of days of the week (independent of the case)
+- `before:string`: Validates if the string datetime is before the provided one
+- `after:string`: Validates if the string datetime is after the provided one
 
 Single rule example:
 ```json
