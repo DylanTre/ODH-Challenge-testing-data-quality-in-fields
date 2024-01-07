@@ -1,19 +1,3 @@
-# Validation
-
-Validation rule configuration must be stored in: `rule-config.json`
-
-Validation input must be stored in: `validation-data.json`
-
-To start the validation:
-
-```cmd
-javac MyClass.java
-java MyClass filename
-```
-
-Validation output is stored: `validation-results.json`
-
-
 # Rule Structure
 
 The rule structure defines validation rules for different data types within a JSON object. Each data type has its set of rules, and the structure is hierarchical.
