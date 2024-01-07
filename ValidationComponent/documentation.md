@@ -52,7 +52,6 @@ The following describes recognized validation rules by validator type
 - `equal:number`: Validates if the numeric value is equal to the provided one
 - `even:boolean`: Validates if the numeric value is even. For floating point numbers, it is `false` [adjust]
 - `odd:boolean`: Validates if the numeric value is odd. For floating point numbers, it is `false` [adjust]
-- `between: {min:number, max:number}`: Validates if the numeric value is between the two provided values. [Not yet implemented]
 - `enum:array_number`: Validates if the number value matches one of the provided in the array
 
 
