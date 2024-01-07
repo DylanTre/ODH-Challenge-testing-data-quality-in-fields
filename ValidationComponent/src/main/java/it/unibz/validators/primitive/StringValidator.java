@@ -1,6 +1,7 @@
 package it.unibz.validators.primitive;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.constants.ViolationMessage;
@@ -67,6 +68,13 @@ public class StringValidator extends AbstractValidator<String> {
                     ViolationMessage.RULE_VALUE_MATCH_VIOLATION,
                     inputValue, constraintStringValue);
 
+            case "contains" -> {
+                ArrayNode missingValues = isStringContains(inputValue, ruleValue);
+                checkForViolation(missingValues.isEmpty(),
+                        ViolationMessage.RULE_CONTAINS_VIOLATION,
+                        key, missingValues.toString());
+            }
+
             case "enum" -> checkForViolation(isOneOf(inputValue, ruleValue),
                     ViolationMessage.RULE_ENUM_MATCH_VIOLATION,
                     inputValue, constraintStringValue);
@@ -101,5 +109,26 @@ public class StringValidator extends AbstractValidator<String> {
             }
         }
         return false;
+    }
+
+
+    /**
+     * Checks if the input string contains all values specified in the ruleValue array.
+     * <p>
+     * This method iterates through the values in the ruleValue array and checks if each
+     * value is present in the input string.
+     *
+     * @param inputValue   The {@code String} to be checked.
+     * @param ruleValue  The JsonNode representing the array of values to check against.
+     * @return {@code ArrayNode} empty if the string contains all values, missing values otherwise
+     */
+    private ArrayNode isStringContains(String inputValue, JsonNode ruleValue) {
+        ArrayNode missingValues = objectMapper.createArrayNode();
+        for (JsonNode targetValue : ruleValue) {
+            if (!inputValue.contains(ruleValue.textValue())) {
+                missingValues.add(targetValue);
+            }
+        }
+        return missingValues;
     }
 }

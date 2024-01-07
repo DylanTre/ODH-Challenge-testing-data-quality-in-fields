@@ -55,7 +55,7 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
             case "contains" -> {
                 ArrayNode missingValues = arrayContainsValues(inputValue, ruleValue);
                 checkForViolation(missingValues.isEmpty(),
-                        ViolationMessage.RULE_ARRAY_CONTAINS_VIOLATION,
+                        ViolationMessage.RULE_CONTAINS_VIOLATION,
                         key, missingValues.toString());
             }
 
@@ -83,13 +83,13 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
      * @return {@code ArrayNode} empty if the array contains all values, missing values otherwise
      */
     private ArrayNode arrayContainsValues(JsonNode inputArray, JsonNode ruleValue) {
-        ArrayNode missingIndexes = objectMapper.createArrayNode();
+        ArrayNode missingValues = objectMapper.createArrayNode();
         for (JsonNode targetValue : ruleValue) {
             if (!arrayContainsValue(inputArray, targetValue)) {
-                missingIndexes.add(targetValue);
+                missingValues.add(targetValue);
             }
         }
-        return missingIndexes;
+        return missingValues;
     }
 
 

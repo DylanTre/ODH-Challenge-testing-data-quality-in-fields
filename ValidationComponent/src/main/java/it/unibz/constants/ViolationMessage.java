@@ -71,9 +71,9 @@ public class ViolationMessage {
     public static final String RULE_EXPECTED_VIOLATION = "%s was expected to be %s";
 
     /**
-     * Message template for array contains violation.
+     * Message template for contains violation.
      */
-    public static final String RULE_ARRAY_CONTAINS_VIOLATION = "Array %s does not contain %s";
+    public static final String RULE_CONTAINS_VIOLATION = "%s does not contain %s";
 
     /**
      * Message template for array correct type violation.

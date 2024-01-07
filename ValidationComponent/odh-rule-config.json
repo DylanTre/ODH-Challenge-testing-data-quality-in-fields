@@ -1,0 +1,44 @@
+{
+  "string": {
+    "key_match": "language",
+    "enum": ["en", "de", "it"]
+  },
+  "array": {
+    "key_match": "conditions",
+    "object": {
+      "validators": {
+        "string": {
+          "key_match": "Temperatures",
+          "contains": "temperatures"
+        },
+        "number": {
+          "key_match": "Temp.*",
+          "min": -273
+        },
+        "date": {
+          "key_match": "date.*",
+          "after": "2024-01-07T00:00:00"
+        }
+      }
+    }
+  },
+  "object": {
+    "key_match": "LicenseInfo",
+    "validators": {
+      "string": [
+        {
+          "key_match": "License",
+          "value_match": "C.*O"
+        },
+        {
+          "key_match": "LicenseHolder",
+          "value_match": "https://provinz.bz.it/wetter"
+        }
+      ],
+      "boolean": {
+        "key_match": "ClosedData",
+        "expected": false
+      }
+    }
+  }
+}

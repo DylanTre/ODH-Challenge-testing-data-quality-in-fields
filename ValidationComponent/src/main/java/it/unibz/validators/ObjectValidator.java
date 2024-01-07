@@ -35,7 +35,10 @@ public class ObjectValidator extends AbstractValidator<JsonNode> {
             return null;
         }
 
-        if (keyMatch(validationRules, key)) {
+        /*
+         * key is null in case the object came in an ARRAY
+         */
+        if (key == null || keyMatch(validationRules, key)) {
             objectViolations.putIfAbsent(getValidatorKey(), dataValidator.validateAll(inputValue));
         }
 

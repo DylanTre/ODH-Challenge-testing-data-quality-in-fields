@@ -1,0 +1,72 @@
+{
+  "_Meta": {
+    "Id": "85610",
+    "Type": "weather",
+    "LastUpdate": "2024-01-07T10:00:00",
+    "Source": "siag",
+    "Reduced": false,
+    "UpdateInfo": null
+  },
+  "Self": "Weather/85610",
+  "Id": 85610,
+  "date": "2024-01-07T10:00:00",
+  "evolutiontitle": "Next week more sunshine",
+  "evolution": "Tuesday sunny, less wind.\r\nWednesday sunny but still cold.\r\nThursday sunny and cold.\r\nFriday sunny and light rising temperatures.",
+  "language": "en",
+  "Conditions": [
+    {
+      "date": "2024-01-07T10:00:00",
+      "Title": "Many clouds",
+      "WeatherCondition": "The Italian low will continue to lose influence and gradually move eastwards.",
+      "WeatherImgurl": "http://daten.buergernetz.bz.it/services/weather/graphics/maps/meteomap0/85610/en",
+      "Temperatures": "High temperatures between 2° and 12°.",
+      "Weatherdesc": "Sunday last precipitations in the higher valleys, snow level between 800-1200 m. Many clouds and few sunny spells. Cold and strong northerly winds.",
+      "WeatherDesc": "Sunday last precipitations in the higher valleys, snow level between 800-1200 m. Many clouds and few sunny spells. Cold and strong northerly winds.",
+      "WeatherImgUrl": "http://daten.buergernetz.bz.it/services/weather/graphics/maps/meteomap0/85610/en",
+      "Reliability": "80",
+      "TempMaxmax": 12,
+      "TempMaxmin": 2,
+      "TempMinmax": 8,
+      "TempMinmin": 0,
+      "bulletinStatus": 16
+    },
+    {
+      "date": "2024-01-08T10:00:00",
+      "Title": "Sun and clouds",
+      "WeatherCondition": "The air pressure will begin slowly to rise.",
+      "WeatherImgurl": "http://daten.buergernetz.bz.it/services/weather/graphics/maps/meteomap1/85610/en",
+      "Temperatures": "High temperatures between -1° and +10°.",
+      "Weatherdesc": "The day will start with lots of clouds, gradually it will clear up a little and the sun shines at times. In many valleys Föhn wind.",
+      "WeatherDesc": "The day will start with lots of clouds, gradually it will clear up a little and the sun shines at times. In many valleys Föhn wind.",
+      "WeatherImgUrl": "http://daten.buergernetz.bz.it/services/weather/graphics/maps/meteomap1/85610/en",
+      "Reliability": "70",
+      "TempMaxmax": 10,
+      "TempMaxmin": -1,
+      "TempMinmax": 2,
+      "TempMinmin": -7,
+      "bulletinStatus": 16
+    }
+  ],
+  "Forecast": [
+    {
+      "date": "2024-01-09T00:00:00",
+      "TempMaxmax": 5,
+      "TempMaxmin": -2,
+      "TempMinmax": -2,
+      "TempMinmin": -12,
+      "Weatherdesc": "Partly cloudy",
+      "Weathercode": "b",
+      "WeatherImgurl": "http://daten.buergernetz.bz.it/services/weather/graphics/icons/imgsource/wetter/icon_2.png",
+      "WeatherCode": "b",
+      "WeatherDesc": "Partly cloudy",
+      "WeatherImgUrl": "http://daten.buergernetz.bz.it/services/weather/graphics/icons/imgsource/wetter/icon_2.png",
+      "Reliability": "70"
+    }
+  ],
+  "LicenseInfo": {
+    "License": "CC0",
+    "LicenseHolder": "https://provinz.bz.it/wetter",
+    "Author": "",
+    "ClosedData": false
+  }
+}
