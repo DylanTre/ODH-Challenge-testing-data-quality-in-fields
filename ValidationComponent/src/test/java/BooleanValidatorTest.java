@@ -6,8 +6,6 @@ import it.unibz.validators.primitive.BooleanValidator;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
 
 public class BooleanValidatorTest {
@@ -17,7 +15,7 @@ public class BooleanValidatorTest {
     private ObjectMapper objectMapper;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         objectMapper = new ObjectMapper();
 
         ConfigParser config = new ConfigParser();

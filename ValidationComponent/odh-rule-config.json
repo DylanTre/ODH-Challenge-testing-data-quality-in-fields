@@ -3,21 +3,19 @@
     "key_match": "language",
     "enum": ["en", "de", "it"]
   },
+  "date": {
+    "key_match": "date.*",
+    "after": "2024-01-07T00:00:00"
+  },
   "array": {
     "key_match": "conditions",
-    "object": {
-      "validators": {
-        "string": {
-          "key_match": "Temperatures",
-          "contains": "temperatures"
-        },
-        "number": {
-          "key_match": "Temp.*",
-          "min": -273
-        },
-        "date": {
-          "key_match": "date.*",
-          "after": "2024-01-07T00:00:00"
+    "validators": {
+      "object": {
+        "validators": {
+          "string": {
+            "key_match": "Temperatures",
+            "contains": "temperatures"
+          }
         }
       }
     }
@@ -28,7 +26,7 @@
       "string": [
         {
           "key_match": "License",
-          "value_match": "C.*O"
+          "value_match": "C.*0"
         },
         {
           "key_match": "LicenseHolder",

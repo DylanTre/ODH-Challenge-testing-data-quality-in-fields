@@ -26,7 +26,12 @@ public class RegexUtils {
             return false;
         }
 
-        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        /*
+         * Ensure that the regex matches the entire value as a word
+         */
+        String modifiedRegex = "^" + regex + "$";
+
+        Pattern pattern = Pattern.compile(modifiedRegex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(value);
         return matcher.find();
     }

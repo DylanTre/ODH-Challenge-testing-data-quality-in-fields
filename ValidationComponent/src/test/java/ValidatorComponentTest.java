@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.DataValidator;
 import it.unibz.JsonParser;
@@ -13,14 +14,17 @@ import static org.junit.Assert.assertEquals;
 public class ValidatorComponentTest {
 
     public static final String ODH_RULE_CONFIG_FILENAME = "odh-rule-config.json";
-    public static final String ODH_INVALID_INPUT_FILENAME = "odh-input-invalid.json";
     public static final String ODH_VALID_INPUT_FILENAME = "odh-input-valid.json";
+    public static final String ODH_INVALID_INPUT_FILENAME = "odh-input-invalid.json";
 
     private DataValidator dataValidator;
     private JsonNode dataToValidate;
+    private ObjectMapper objectMapper;
 
     @Before
     public void setUp() {
+        objectMapper = new ObjectMapper();
+
         ConfigParser config = new ConfigParser();
         JsonNode validationRules = config.loadValidationRules(ODH_RULE_CONFIG_FILENAME);
 
@@ -28,13 +32,11 @@ public class ValidatorComponentTest {
     }
 
     @Test
-    public void whenInputDataValidThenValidationOutputMustContainObjectNodeWithEmptyViolationMessageArrays() throws IOException {
+    public void whenInputDataValidThenValidationOutputMustContainEmptyObjectNode() throws IOException {
         dataToValidate = JsonParser.parseData(ODH_VALID_INPUT_FILENAME);
         ObjectNode validationOutput = dataValidator.validateAll(dataToValidate);
 
-        System.out.println(validationOutput);
-
-        assertEquals(getValidOutput(), validationOutput);
+        assertEquals(getExpectedValidOutput(), validationOutput);
     }
 
     @Test
@@ -42,17 +44,15 @@ public class ValidatorComponentTest {
         dataToValidate = JsonParser.parseData(ODH_INVALID_INPUT_FILENAME);
         ObjectNode validationOutput = dataValidator.validateAll(dataToValidate);
 
-        assertEquals(validationOutput, getInvalidOutput());
+        assertEquals(getExpectedInvalidOutput(), validationOutput);
     }
 
-    private ObjectNode getValidOutput() {
+    private ObjectNode getExpectedValidOutput() {
+        return objectMapper.createObjectNode();
+    }
+
+    private ObjectNode getExpectedInvalidOutput() {
         return null;
     }
-
-    private ObjectNode getInvalidOutput() {
-        return null;
-    }
-
-
 
 }

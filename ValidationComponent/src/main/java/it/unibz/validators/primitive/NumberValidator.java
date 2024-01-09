@@ -26,20 +26,24 @@ public class NumberValidator extends AbstractValidator<Number> {
 
 
     @Override
-    public ObjectNode validate(final String key, JsonNode inputValue) {
+    public ObjectNode validate(final String inputKey, JsonNode inputValue) {
         if (JsonNodeType.NUMBER != inputValue.getNodeType()) {
             return null;
         }
 
         Number numericValue = inputValue.numberValue();
-        applyValidationRule(key, numericValue, validationRules);
+        applyValidationRule(inputKey, numericValue, validationRules);
+
+        if (violationMessages.isEmpty()) {
+            return null;
+        }
 
         numberViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return numberViolations;
     }
 
     @Override
-    public void applySpecificValidationRule(String key, Number inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySpecificValidationRule(String inputKey, Number inputValue, String ruleName, JsonNode ruleValue) {
         Number constrainNumberValue = null;
         /*
          * enum rule can contain list of strings to match
@@ -51,27 +55,27 @@ public class NumberValidator extends AbstractValidator<Number> {
         switch (ruleName) {
             case "min" -> checkForViolation(isMoreThan(inputValue, constrainNumberValue),
                     ViolationMessage.RULE_MORE_THAN_VIOLATION,
-                    inputValue, constrainNumberValue);
+                    inputKey, inputValue, constrainNumberValue);
 
             case "max" -> checkForViolation(!isMoreThan(inputValue, constrainNumberValue),
                     ViolationMessage.RULE_LESS_THAN_VIOLATION,
-                    inputValue, constrainNumberValue);
+                    inputKey, inputValue, constrainNumberValue);
 
             case "equal" -> checkForViolation(isEqual(inputValue, constrainNumberValue),
                     ViolationMessage.RULE_EQUAL_VIOLATION,
-                    inputValue, constrainNumberValue);
+                    inputKey, inputValue, constrainNumberValue);
 
             case "even" -> checkForViolation(isEven(inputValue),
                     ViolationMessage.RULE_EVEN_VIOLATION,
-                    inputValue);
+                    inputKey, inputValue);
 
             case "odd" -> checkForViolation(isOdd(inputValue),
                     ViolationMessage.RULE_ODD_VIOLATION,
-                    inputValue);
+                    inputKey, inputValue);
 
             case "enum" -> checkForViolation(isOneOf(inputValue, ruleValue),
                     ViolationMessage.RULE_ENUM_MATCH_VIOLATION,
-                    inputValue, ruleValue);
+                    inputKey, inputValue, ruleValue);
 
             default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }

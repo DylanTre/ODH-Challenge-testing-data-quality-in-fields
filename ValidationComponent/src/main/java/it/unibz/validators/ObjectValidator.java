@@ -30,23 +30,33 @@ public class ObjectValidator extends AbstractValidator<JsonNode> {
     }
 
     @Override
-    public ObjectNode validate(String key, JsonNode inputValue) {
+    public ObjectNode validate(String inputKey, JsonNode inputValue) {
         if (JsonNodeType.OBJECT != inputValue.getNodeType()) {
             return null;
         }
 
         /*
-         * key is null in case the object came in an ARRAY
+         * inputKey is null in case the object came in an ARRAY
          */
-        if (key == null || keyMatch(validationRules, key)) {
-            objectViolations.putIfAbsent(getValidatorKey(), dataValidator.validateAll(inputValue));
+        if (inputKey == null || keyMatch(validationRules, inputKey)) {
+            ObjectNode violations = dataValidator.validateAll(inputValue);
+
+            if (violations.isEmpty()) {
+                return null;
+            }
+
+            objectViolations.putIfAbsent(getValidatorKey(), violations);
+        }
+
+        if (objectViolations.isEmpty()) {
+            return null;
         }
 
         return objectViolations;
     }
 
     @Override
-    protected void applySpecificValidationRule(String key, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
+    protected void applySpecificValidationRule(String inputKey, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
         /*
          * Object specific rules
          */
@@ -62,7 +72,7 @@ public class ObjectValidator extends AbstractValidator<JsonNode> {
      * <p>
      * This method checks if the validationRules has a "validators" property. If present,
      * it returns the JsonNode associated with "validators"; otherwise, it returns the entire
-     * validationRules JsonNode.
+     * JsonNode.
      *
      * @return The JsonNode representing the object rules from the validationRules.
      */

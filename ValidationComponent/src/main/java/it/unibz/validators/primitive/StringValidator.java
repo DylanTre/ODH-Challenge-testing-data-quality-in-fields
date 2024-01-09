@@ -28,7 +28,7 @@ public class StringValidator extends AbstractValidator<String> {
 
 
     @Override
-    public ObjectNode validate(final String key, JsonNode inputValue) {
+    public ObjectNode validate(final String inputKey, JsonNode inputValue) {
         if (JsonNodeType.STRING != inputValue.getNodeType()) {
             return null;
         }
@@ -42,14 +42,18 @@ public class StringValidator extends AbstractValidator<String> {
             return null;
         }
 
-        applyValidationRule(key, stringValue, validationRules);
+        applyValidationRule(inputKey, stringValue, validationRules);
+
+        if (violationMessages.isEmpty()) {
+            return null;
+        }
 
         stringViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return stringViolations;
     }
 
     @Override
-    public void applySpecificValidationRule(String key, String inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySpecificValidationRule(String inputKey, String inputValue, String ruleName, JsonNode ruleValue) {
         String constraintStringValue = null;
 
         /*
@@ -72,12 +76,12 @@ public class StringValidator extends AbstractValidator<String> {
                 ArrayNode missingValues = isStringContains(inputValue, ruleValue);
                 checkForViolation(missingValues.isEmpty(),
                         ViolationMessage.RULE_CONTAINS_VIOLATION,
-                        key, missingValues.toString());
+                        inputKey, inputValue, missingValues.toString());
             }
 
             case "enum" -> checkForViolation(isOneOf(inputValue, ruleValue),
                     ViolationMessage.RULE_ENUM_MATCH_VIOLATION,
-                    inputValue, constraintStringValue);
+                    inputKey, inputValue, ruleValue);
 
             default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }
@@ -103,7 +107,7 @@ public class StringValidator extends AbstractValidator<String> {
             return false;
         }
 
-        for (JsonNode enumValue : ruleValue.path("enum")) {
+        for (JsonNode enumValue : ruleValue) {
             if (inputValue.equals(enumValue.asText())) {
                 return true;
             }

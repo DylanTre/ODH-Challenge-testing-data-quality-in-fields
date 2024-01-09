@@ -1,14 +1,13 @@
 {
-  "number" : [ "Number 30343483482 is not less than 500", "Number 3.12 is not more than 10", "Number 3.12 is not even", "Number 3034 is not less than 500" ],
-  "string" : [ ],
-  "date" : [ "Date 2022-11-19T12:00 day of week is SATURDAY. Must be MONDAY" ],
-  "boolean" : [ "bool was expected to be false" ],
-  "array" : [ "Array array does not contain [10,20]", {
-    "number" : [ ],
-    "string" : [ "Field VAX value does not match value: 3" ]
+  "number" : [ "Field number value 30343483482 is not less than 500", "Field num value 3.12 is not more than 10", "Field num value 3.12 is not even", "Field numb value 3034 is not less than 500" ],
+  "date" : [ "Field date value 2022-11-19T12:00 day of week is SATURDAY. Must be MONDAY" ],
+  "boolean" : [ "Field bool value true was expected to be false" ],
+  "array" : [ "Array array does not contain values [10,20]", {
+    "string" : [ "value VAX does not match value: 3" ]
   } ],
   "object" : {
-    "string" : [ ],
-    "object" : { }
+    "object" : {
+      "number" : [ "Field numb value 22 is not less than 18" ]
+    }
   }
 }

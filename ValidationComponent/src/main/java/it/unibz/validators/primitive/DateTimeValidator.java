@@ -30,7 +30,7 @@ public class DateTimeValidator extends AbstractValidator<LocalDateTime> {
     }
 
     @Override
-    public ObjectNode validate(String key, JsonNode inputValue) {
+    public ObjectNode validate(String inputKey, JsonNode inputValue) {
         if (JsonNodeType.STRING != inputValue.getNodeType()) {
             return null;
         }
@@ -42,13 +42,18 @@ public class DateTimeValidator extends AbstractValidator<LocalDateTime> {
             return null;
         }
 
-        applyValidationRule(key, parsedDate, validationRules);
+        applyValidationRule(inputKey, parsedDate, validationRules);
+
+        if (violationMessages.isEmpty()) {
+            return null;
+        }
+
         dateViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return dateViolations;
     }
 
     @Override
-    public void applySpecificValidationRule(String key, LocalDateTime inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySpecificValidationRule(String inputKey, LocalDateTime inputValue, String ruleName, JsonNode ruleValue) {
         String constrainDateStringValue = ruleValue.textValue();
 
         switch (ruleName) {
@@ -56,16 +61,16 @@ public class DateTimeValidator extends AbstractValidator<LocalDateTime> {
                 String dayOfWeek = constrainDateStringValue.toUpperCase(Configuration.ROOT_LOCALE);
                 checkForViolation(isDateOfWeekValid(inputValue, DayOfWeek.valueOf(dayOfWeek)),
                         ViolationMessage.RULE_DAY_OF_WEEK_VIOLATION,
-                        inputValue, inputValue.getDayOfWeek(), dayOfWeek);
+                        inputKey, inputValue, inputValue.getDayOfWeek(), dayOfWeek);
             }
 
             case "before" -> checkForViolation(isDateBeforeValid(inputValue, constrainDateStringValue),
                     ViolationMessage.RULE_IS_BEFORE_VIOLATION,
-                    inputValue, constrainDateStringValue);
+                    inputKey, inputValue, constrainDateStringValue);
 
             case "after" -> checkForViolation(isDateAfterValid(inputValue, constrainDateStringValue),
                     ViolationMessage.RULE_IS_AFTER_VIOLATION,
-                    inputValue, constrainDateStringValue);
+                    inputKey, inputValue, constrainDateStringValue);
 
             default -> throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }

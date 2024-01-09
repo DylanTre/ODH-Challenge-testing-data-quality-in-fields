@@ -27,22 +27,26 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
         super(validationRules);
 
         ConfigParser config = new ConfigParser();
-        this.dataValidator = new DataValidator(config.getGenericValidators(validationRules));
+        this.dataValidator = new DataValidator(config.getGenericValidators(getArrayRules()));
         this.arrayViolations = getObjectMapper().createObjectNode();
     }
 
     @Override
-    public ObjectNode validate(String key, JsonNode inputValue) {
+    public ObjectNode validate(String inputKey, JsonNode inputValue) {
         ObjectNode arrayValuesViolations = objectMapper.createObjectNode();
         if (JsonNodeType.ARRAY != inputValue.getNodeType()) {
             return null;
         }
 
-        if (keyMatch(validationRules, key)) {
+        if (keyMatch(validationRules, inputKey)) {
             arrayValuesViolations = validateArrayValues(inputValue);
         }
 
-        applyValidationRule(key, inputValue, validationRules);
+        applyValidationRule(inputKey, inputValue, validationRules);
+
+        if (arrayValuesViolations.isEmpty()) {
+            return null;
+        }
 
         violationMessages.add(arrayValuesViolations);
         arrayViolations.putIfAbsent(getValidatorKey(), violationMessages);
@@ -50,18 +54,18 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
     }
 
     @Override
-    protected void applySpecificValidationRule(String key, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
+    protected void applySpecificValidationRule(String inputKey, JsonNode inputValue, String ruleName, JsonNode ruleValue) {
         switch (ruleName) {
             case "contains" -> {
                 ArrayNode missingValues = arrayContainsValues(inputValue, ruleValue);
                 checkForViolation(missingValues.isEmpty(),
-                        ViolationMessage.RULE_CONTAINS_VIOLATION,
-                        key, missingValues.toString());
+                        ViolationMessage.RULE_ARRAY_CONTAINS_VIOLATION,
+                        inputKey, missingValues.toString());
             }
 
             case "type" -> checkForViolation(isCorrectType(inputValue, ruleValue),
                     ViolationMessage.RULE_ARRAY_CORRECT_TYPE_VIOLATION,
-                    key, ruleValue.textValue());
+                    inputKey, ruleValue.textValue());
 
             default -> {}
         }
@@ -111,8 +115,8 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
             return true;
         }
 
-        for (int i = 0; i < inputArray.size(); i++) {
-            if (inputArray.get(i).getNodeType() != ruleValue.getNodeType()) {
+        for (int index = 0; index < inputArray.size(); index++) {
+            if (inputArray.get(index).getNodeType() != ruleValue.getNodeType()) {
                 return false;
             }
         }
@@ -156,6 +160,23 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
             }
         }
         return false;
+    }
+
+    /**
+     * Retrieves the JsonNode representing the array rules from the validationRules.
+     * <p>
+     * This method checks if the validationRules has a "validators" property. If present,
+     * it returns the JsonNode associated with "validators"; otherwise, it returns the entire
+     * JsonNode.
+     *
+     * @return The JsonNode representing the array rules from the validationRules.
+     */
+    private JsonNode getArrayRules() {
+        if (validationRules.has("validators")) {
+            return validationRules.get("validators");
+        } else {
+            return validationRules;
+        }
     }
 
 }

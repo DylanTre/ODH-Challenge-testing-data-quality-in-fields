@@ -137,11 +137,11 @@ public abstract class AbstractValidator<T> {
      * Checks if the input value matches a given regular expression pattern.
      *
      * @param inputValue             The input value to be checked.
-     * @param constraintStringValue  The regular expression pattern to match against.
+     * @param constraintRegex        The regular expression pattern to match against.
      * @return {@code true} if the input value matches the pattern; {@code false} otherwise.
      */
-    protected boolean isValueMatch(String inputValue, String constraintStringValue) {
-        return RegexUtils.regexMatch(constraintStringValue, inputValue);
+    protected boolean isValueMatch(String inputValue, String constraintRegex) {
+        return RegexUtils.regexMatch(constraintRegex, inputValue);
     }
 
     /**
@@ -150,12 +150,12 @@ public abstract class AbstractValidator<T> {
      * This method handles global validation rules recognized by every validator.
      * If rule is not global, it is specific and is applied in a child
      *
-     * @param key        The key associated with the input value being validated.
+     * @param inputKey        The inputKey associated with the input value being validated.
      * @param inputValue The input value to be validated.
      * @param ruleName   The name of the global validation rule.
      * @param ruleValue  The JsonNode representing the value associated with the validation rule.
      */
-    protected void applyGlobalValidationRule(String key, T inputValue, String ruleName, JsonNode ruleValue) {
+    protected void applyGlobalValidationRule(String inputKey, T inputValue, String ruleName, JsonNode ruleValue) {
         switch (ruleName) {
             case "key_match" -> {}
 
@@ -164,34 +164,34 @@ public abstract class AbstractValidator<T> {
              * There should be possible to associate naming conventions
              * (using regular expressions) to validation rules.
              */
-            case "name_pattern" -> checkForViolation(isValueMatch(key, ruleValue.textValue()),
+            case "name_pattern" -> checkForViolation(isValueMatch(inputKey, ruleValue.textValue()),
                     ViolationMessage.RULE_NAME_PATTERN_VIOLATION,
-                    key, ruleValue.textValue());
+                    inputKey, inputValue, ruleValue.textValue());
 
-            default -> applySpecificValidationRule(key, inputValue, ruleName, ruleValue);
+            default -> applySpecificValidationRule(inputKey, inputValue, ruleName, ruleValue);
         }
     }
 
     /**
-     * Validates the provided JSON input value for a specified key and returns
+     * Validates the provided JSON input value for a specified inputKey and returns
      * an ObjectNode containing validation results.
      *
-     * @param key         The key associated with the input value.
-     * @param inputValue  The JSON node representing the input value to be validated.
+     * @param inputKey   The inputKey associated with the input value.
+     * @param inputValue The JSON node representing the input value to be validated.
      * @return An ObjectNode containing validation results, or null if validation is not applicable.
      */
-    public abstract ObjectNode validate(String key, JsonNode inputValue);
+    public abstract ObjectNode validate(String inputKey, JsonNode inputValue);
 
     /**
      * Applies a specific validation rule to the input value based on the rule name and value.
      * This method is called during the validation process.
      *
-     * @param key        The key associated with the input value.
+     * @param inputKey        The inputKey associated with the input value.
      * @param inputValue The input value to be validated.
      * @param ruleName   The name of the validation rule.
      * @param ruleValue  The JSON node representing the value of the validation rule.
      */
-    protected abstract void applySpecificValidationRule(String key, T inputValue, String ruleName, JsonNode ruleValue);
+    protected abstract void applySpecificValidationRule(String inputKey, T inputValue, String ruleName, JsonNode ruleValue);
 
     /**
      * Gets the key associated with the validator. This key is used to identify

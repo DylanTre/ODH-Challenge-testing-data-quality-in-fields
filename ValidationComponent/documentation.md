@@ -184,17 +184,19 @@ Single rule example:
 
 Array rule allows to nest other validators inside, without `key_match` aspect. [adjust]
 
+Validators are specified under the `validators` keyword.
 Example: 
 
 ```json
 "array": {
     "key_match": "array",
-    "contains": "VAX",
-    "string": {
-      "value_match": 3
-    },
-    "number": {
-      "max": 10
+    "validators": {
+      "string": {
+        "value_match": 3
+      },
+      "number": {
+        "max": 10
+      }
     }
 }
 ```

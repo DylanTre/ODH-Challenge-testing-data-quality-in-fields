@@ -25,20 +25,24 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
     }
 
     @Override
-    public ObjectNode validate(final String key, JsonNode inputValue) {
+    public ObjectNode validate(final String inputKey, JsonNode inputValue) {
         if (JsonNodeType.BOOLEAN != inputValue.getNodeType()) {
             return null;
         }
 
         boolean booleanValue = inputValue.booleanValue();
-        applyValidationRule(key, booleanValue, validationRules);
+        applyValidationRule(inputKey, booleanValue, validationRules);
+
+        if (violationMessages.isEmpty()) {
+            return null;
+        }
 
         booleanViolations.putIfAbsent(getValidatorKey(), violationMessages);
         return booleanViolations;
     }
 
     @Override
-    public void applySpecificValidationRule(String key, Boolean inputValue, String ruleName, JsonNode ruleValue) {
+    public void applySpecificValidationRule(String inputKey, Boolean inputValue, String ruleName, JsonNode ruleValue) {
         /*
          * Boolean variable should not have more than 1 rule, otherwise it is a list of boolean variables
          */
@@ -47,7 +51,7 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
         if (ruleName.equals("expected")) {
             checkForViolation(isValueAsExpected(inputValue, constrainBooleanValue),
                     ViolationMessage.RULE_EXPECTED_VIOLATION,
-                    key, constrainBooleanValue);
+                    inputKey, inputValue, constrainBooleanValue);
         } else {
             throw new IllegalArgumentException(String.format(ViolationMessage.RULE_UNRECOGNIZED, ruleName));
         }
