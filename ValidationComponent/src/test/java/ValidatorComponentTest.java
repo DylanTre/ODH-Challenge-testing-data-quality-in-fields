@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.unibz.DataValidator;
 import it.unibz.JsonParser;
@@ -52,7 +53,17 @@ public class ValidatorComponentTest {
     }
 
     private ObjectNode getExpectedInvalidOutput() {
-        return null;
+        ObjectNode objectNode = objectMapper.createObjectNode();
+
+        ArrayNode expectedStringViolations = objectNode.putArray("string");
+        expectedStringViolations.add("Field language value pl is none of the possible options of [\"en\",\"de\",\"it\"]");
+
+        ObjectNode nestedObject = objectNode.putObject("object");
+
+        ArrayNode nestedStringArray = nestedObject.putArray("string");
+        nestedStringArray.add("value undefined does not match value: C.*0");
+
+        return objectNode;
     }
 
 }
