@@ -95,11 +95,11 @@ public abstract class AbstractValidator<T> {
      * <p>
      * Iterates through the fields of the object and applies validation rules to each field.
      *
-     * @param validationKey   The key associated with the validation.
-     * @param validationValue The value to be validated.
-     * @param ruleValue   The validation rules for the object.
+     * @param inputKey          The key of the input.
+     * @param inputValue        The value of the input.
+     * @param ruleValue     The validation rules for the object.
      */
-    private void validateObjectFields(String validationKey, T validationValue, JsonNode ruleValue) {
+    private void validateObjectFields(String inputKey, T inputValue, JsonNode ruleValue) {
         ObjectNode objectNode = (ObjectNode) ruleValue;
         Iterator<String> fieldNames = objectNode.fieldNames();
 
@@ -108,12 +108,12 @@ public abstract class AbstractValidator<T> {
             JsonNode fieldValue = objectNode.get(fieldName);
 
             if (fieldValue.isObject()) {
-                applyValidationRule(validationKey, validationValue, fieldValue);
+                applyValidationRule(inputKey, inputValue, fieldValue);
             } else if (fieldValue.isArray()) {
-                validateArrayElements(validationKey, validationValue, fieldValue);
+                validateArrayElements(inputKey, inputValue, fieldValue);
             }
 
-            applyGlobalValidationRule(validationKey, validationValue, fieldName, fieldValue);
+            applyGlobalValidationRule(inputKey, inputValue, fieldName, fieldValue);
         }
     }
 
@@ -151,9 +151,9 @@ public abstract class AbstractValidator<T> {
      * If rule is not global, it is specific and is applied in a child
      *
      * @param inputKey        The inputKey associated with the input value being validated.
-     * @param inputValue The input value to be validated.
-     * @param ruleName   The name of the global validation rule.
-     * @param ruleValue  The JsonNode representing the value associated with the validation rule.
+     * @param inputValue      The input value to be validated.
+     * @param ruleName        The name of the global validation rule.
+     * @param ruleValue   The JsonNode representing the value associated with the validation rule.
      */
     protected void applyGlobalValidationRule(String inputKey, T inputValue, String ruleName, JsonNode ruleValue) {
         switch (ruleName) {
