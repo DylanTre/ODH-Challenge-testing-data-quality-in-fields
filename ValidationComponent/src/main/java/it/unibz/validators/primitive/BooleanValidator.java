@@ -34,7 +34,7 @@ public class BooleanValidator extends AbstractValidator<Boolean> {
         applyValidationRule(inputKey, booleanValue, validationRules);
 
         if (violationMessages.isEmpty()) {
-            return null;
+            return objectMapper.createObjectNode();
         }
 
         booleanViolations.putIfAbsent(getValidatorKey(), violationMessages);

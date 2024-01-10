@@ -45,7 +45,7 @@ public class DateTimeValidator extends AbstractValidator<LocalDateTime> {
         applyValidationRule(inputKey, parsedDate, validationRules);
 
         if (violationMessages.isEmpty()) {
-            return null;
+            return objectMapper.createObjectNode();
         }
 
         dateViolations.putIfAbsent(getValidatorKey(), violationMessages);

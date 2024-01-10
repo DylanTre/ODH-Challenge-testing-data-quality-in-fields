@@ -45,7 +45,7 @@ public class StringValidator extends AbstractValidator<String> {
         applyValidationRule(inputKey, stringValue, validationRules);
 
         if (violationMessages.isEmpty()) {
-            return null;
+            return objectMapper.createObjectNode();
         }
 
         stringViolations.putIfAbsent(getValidatorKey(), violationMessages);

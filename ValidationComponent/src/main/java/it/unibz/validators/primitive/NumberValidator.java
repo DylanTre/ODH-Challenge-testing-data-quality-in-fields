@@ -35,7 +35,7 @@ public class NumberValidator extends AbstractValidator<Number> {
         applyValidationRule(inputKey, numericValue, validationRules);
 
         if (violationMessages.isEmpty()) {
-            return null;
+            return objectMapper.createObjectNode();
         }
 
         numberViolations.putIfAbsent(getValidatorKey(), violationMessages);

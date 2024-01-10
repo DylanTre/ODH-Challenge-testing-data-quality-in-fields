@@ -49,7 +49,7 @@ public class ObjectValidator extends AbstractValidator<JsonNode> {
         }
 
         if (objectViolations.isEmpty()) {
-            return null;
+            return objectMapper.createObjectNode();
         }
 
         return objectViolations;

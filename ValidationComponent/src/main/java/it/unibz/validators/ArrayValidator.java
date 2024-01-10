@@ -45,7 +45,7 @@ public class ArrayValidator extends AbstractValidator<JsonNode> {
         applyValidationRule(inputKey, inputValue, validationRules);
 
         if (arrayValuesViolations.isEmpty()) {
-            return null;
+            return objectMapper.createObjectNode();
         }
 
         violationMessages.add(arrayValuesViolations);

@@ -20,9 +20,6 @@ public class BooleanValidatorTest {
 
         ConfigParser config = new ConfigParser();
         JsonNode validationRules = config.loadValidationRules(TEST_RULE_CONFIG_FILENAME);
-
-        // FIXME because of getGenericValidators, there we create validation specific rules for each
-        //  but in this case we just want to use the basic boolean validator
         booleanValidator = new BooleanValidator(validationRules.get("boolean"));
     }
 
@@ -32,19 +29,10 @@ public class BooleanValidatorTest {
         JsonNode inputValue = objectMapper.convertValue(true, JsonNode.class);
 
         ObjectNode validationResult = booleanValidator.validate(inputKey, inputValue);
-
-        // Assert that violation list is empty
-        assertEquals(getExpectedResult(objectMapper.createArrayNode()), validationResult);
+        assertEquals(getExpectedValidOutput(), validationResult);
     }
 
-    @Test
-    public void whenBooleanRuleWithoutKeyMatchThenApplyRuleToAllInputBoolean() {
-
-    }
-
-    private ObjectNode getExpectedResult(JsonNode innerValue) {
-        ObjectNode node = objectMapper.createObjectNode();
-        node.set(booleanValidator.getValidatorKey(), innerValue);
-        return node;
+    private ObjectNode getExpectedValidOutput() {
+        return objectMapper.createObjectNode();
     }
 }
